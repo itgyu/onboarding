@@ -217,13 +217,21 @@ let S={mode:BTOK?"brand":(AKEY?"admin":"landing"),brand:null,viewStep:undefined,
 const STEPS=[
  {tag:"0단계",title:"NDA 체결",desc:"상세 자료 검토를 시작하기 전, 비밀유지계약(NDA)을 먼저 체결해요. 초안(양방향)은 소프트먼트가 드려요.",
   fields:[
+   {k:"nda_files",type:"downloads",label:"NDA 초안 내려받기",alabel:"NDA 초안",
+     guide:{what:"양방향 비밀유지계약서 초안이에요. 내려받아 검토하신 뒤 서명해 주세요.",ours:"수정 의견은 문서에 변경 사항 추적(Track Changes)·코멘트로 남겨 회신해 주세요."},
+     items:[{label:"비밀유지계약서(NDA) 초안 v2605",asset:"nda",s:"양사 상호 비밀유지 — 검토 후 날인"}]},
    {k:"nda_ok",type:"confirm",label:"NDA(비밀유지계약서)를 검토하고 서명을 완료했습니다.",req:true,alabel:"NDA 서명"},
    {k:"nda_date",type:"date",label:"서명일 (선택)",alabel:"서명일"} ]},
 
  {tag:"1단계",title:"계약 & 필수 서류",desc:"계약서 초안 2종(멤버십 클라우드 서비스 이용계약 + 자사앱 개발·유지보수계약)을 검토·체결하고, 사업자·담당자 정보를 회신해요. 예상 기간 약 1~2주.",
   fields:[
+   {k:"contract_files",type:"downloads",label:"계약서 초안 2종 내려받기",alabel:"계약서 초안",
+     guide:{what:"멤버십 클라우드 서비스 이용계약서와 자사앱 개발·유지보수계약서 초안이에요. 내려받아 검토해 주세요.",ours:"수정 의견은 문서에 변경 사항 추적(Track Changes)·코멘트로 남기시거나, 아래 '계약서 검토 의견' 칸에 적어주세요."},
+     items:[
+      {label:"멤버십클라우드 서비스 이용계약서(초안) v2605",asset:"svc",s:"멤버십 SaaS 이용 조건·정산·데이터 관리"},
+      {label:"멤버십APP 개발·유지보수계약서(초안) v2605",asset:"app",s:"자사앱 개발 범위·유지보수·SLA"}]},
    {k:"contract_review",type:"textarea",req:true,alabel:"계약서 검토 의견",label:"계약서 검토 의견 (조항별 코멘트)",ph:"예) 제9조 4항 데이터 반환 조건 문의 / 위약금 조정 요청 — 의견이 없으시면 '없음'이라고 적어주세요",
-     guide:{what:"소프트먼트가 드린 계약서 초안 2종을 검토하시고 조항별 의견을 남겨주세요.",ours:"초안은 당사 제공본이에요. 고객사 검토 의견을 반영해 양사 합의로 확정합니다."}},
+     guide:{what:"위에서 내려받은 계약서 초안 2종을 검토하시고 조항별 의견을 남겨주세요.",ours:"초안은 당사 제공본이에요. 고객사 검토 의견을 반영해 양사 합의로 확정합니다."}},
    {k:"contract",type:"radio",label:"계약 체결(서명)이 완료되었나요?",req:true,options:["완료","진행 중"],mustBe:"완료",block:"계약 체결이 완료되어야 다음 단계로 넘어갈 수 있어요.",alabel:"계약 체결"},
    {k:"sealinfo",type:"text",req:true,alabel:"법인 인감·대표자 정보",label:"법인 인감·대표자 정보 (계약서 날인용)",ph:"대표자 성명 / 법인 인감 준비 여부"},
    {k:"docs",type:"checklist",label:"구비 서류 제출 — 파일을 첨부하면 각각 제출완료 처리돼요",alabel:"구비 서류",req:true,
@@ -428,7 +436,7 @@ const esc=s=>(""+s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"'
 const shortL=s=>(""+s).replace(/\s*\(.*?\)\s*/g," ").replace(/\s*·.*$/,"").trim()||s;
 function fieldDone(f,data){
   if(f.showIf && !f.showIf(data))return true;
-  if(f.type==="info"||f.type==="docs")return true;
+  if(f.type==="info"||f.type==="docs"||f.type==="downloads")return true;
   const v=data[f.k];
   if(f.type==="multi")return !f.req||(Array.isArray(v)&&v.length>0);
   if(f.type==="confirm")return v===true;
@@ -585,6 +593,9 @@ function fieldHtml(f,data){
   if(f.type==="docs"){
     const rows=f.items.map((t,i)=>`<div class="term"><div class="thead"><span class="tname">${esc(t.n)}</span></div>${t.s?`<div class="tcap">${esc(t.s)}</div>`:""}${t.full?`<button class="termfull" data-termfull="${f.k}" data-i="${i}">📄 전문 보기</button>`:""}</div>`).join("");
     return `<div class="field"><div class="flabel">${esc(f.label)} <span class="hint">참고 자료 · 열람용</span></div>${gb}${rows}</div>`;}
+  if(f.type==="downloads"){
+    const rows=f.items.map(it=>`<div class="term"><div class="thead"><span class="tname">📄 ${esc(it.label)}</span><div class="opts"><button class="termfull" style="margin-top:0" data-asset="${esc(it.asset)}">⬇ 다운로드</button></div></div>${it.s?`<div class="tcap">${esc(it.s)}</div>`:""}</div>`).join("");
+    return `<div class="field"><div class="flabel">${esc(f.label)} <span class="hint">다운로드</span></div>${gb}${rows}</div>`;}
   if(f.type==="channels"){
     const rows=f.items.map(it=>{const cv=(v||{})[it.id];const multi=it.kind==="multi";
       return `<div class="chanrow"><span class="cname">${esc(it.label)}</span>
@@ -630,7 +641,7 @@ const arow=(k,v)=>`<div class="arow"><div class="ak">${esc(k)}</div><div class="
 const chip=(t,c="")=>`<span class="chip ${c}">${esc(t)}</span>`;
 function answers(st,data){
   let out="";
-  st.fields.forEach(f=>{if(f.type==="info"||f.type==="docs")return;if(f.showIf&&!f.showIf(data))return;const v=data[f.k];const lab=f.alabel||shortL(f.label);
+  st.fields.forEach(f=>{if(f.type==="info"||f.type==="docs"||f.type==="downloads")return;if(f.showIf&&!f.showIf(data))return;const v=data[f.k];const lab=f.alabel||shortL(f.label);
     if(f.type==="multi"){const a=Array.isArray(v)?v:[];out+=arow(lab,a.length?a.map(x=>chip(x,"ok")).join(" "):"—");}
     else if(f.type==="confirm")out+=arow(lab,v===true?chip("완료 ✓","ok"):"—");
     else if(f.type==="textarea")out+=arow(lab,v?`<span class="notequote">“${esc(v)}”</span>`:"—");
@@ -663,7 +674,7 @@ function openPdf(b){
   STEPS.forEach((st,si)=>{
     const done=stepDone(si,data);
     body+=`<div class="ps"><div class="ph">${esc(st.tag)} · ${esc(st.title)} <span class="pst ${done?"d":""}">${done?"완료":"미완료"}</span></div><table>`;
-    st.fields.forEach(f=>{if(f.type==="info"||f.type==="docs")return;if(f.showIf&&!f.showIf(data))return;const v=data[f.k];const lab=f.alabel||shortL(f.label);const push=(k,val)=>{body+=`<tr><td class="pk">${esc(k)}</td><td>${val}</td></tr>`;};
+    st.fields.forEach(f=>{if(f.type==="info"||f.type==="docs"||f.type==="downloads")return;if(f.showIf&&!f.showIf(data))return;const v=data[f.k];const lab=f.alabel||shortL(f.label);const push=(k,val)=>{body+=`<tr><td class="pk">${esc(k)}</td><td>${val}</td></tr>`;};
       if(f.type==="multi"){const a=Array.isArray(v)?v:[];push(lab,a.length?esc(a.join(", ")):"—");}
       else if(f.type==="confirm")push(lab,v===true?"완료":"—");
       else if(f.type==="textarea")push(lab,v?esc(v).replace(/\n/g,"<br>"):"—");
@@ -726,6 +737,10 @@ function openTermFull(fk,i){
 }
 function bind(){
   document.querySelectorAll("[data-termfull]").forEach(el=>el.onclick=()=>openTermFull(el.dataset.termfull,+el.dataset.i));
+  document.querySelectorAll("[data-asset]").forEach(el=>el.onclick=async()=>{const t=el.textContent;el.textContent="링크 생성 중…";
+    try{const r=await api(`/api/asset-url?b=${encodeURIComponent(BTOK||"")}&k=${encodeURIComponent(AKEY||"")}&name=${el.dataset.asset}`);window.open(r.url,"_blank");}
+    catch(e){alert("다운로드 링크 생성에 실패했어요. 잠시 후 다시 시도해 주세요.");}
+    el.textContent=t;});
   document.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>{if(el.hasAttribute("disabled"))return;S.viewStep=+el.dataset.go;render();window.scrollTo({top:0,behavior:"smooth"});});
   document.querySelectorAll("[data-toggle]").forEach(el=>el.onclick=()=>{const k=el.dataset.toggle;set(k,D()[k]===true?false:true);});
   document.querySelectorAll("[data-input]").forEach(el=>el.onchange=()=>set(el.dataset.input,el.value));

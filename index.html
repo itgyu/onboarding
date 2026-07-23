@@ -209,7 +209,7 @@ const STEPS=[
    {k:"sensitive",type:"radio",label:"민감정보(주민번호 등)를 수집하시나요?",alabel:"민감정보 수집",req:true,options:["수집 안 함","수집함"]},
    {k:"channels",type:"channels",label:"외부 연동 채널 결정 (전부 선택해야 넘어가요)",alabel:"외부 연동",req:true,items:[
      {id:"alimtalk",label:"카카오 알림톡",kind:"toggle",opt:["사용","미사용"]},
-     {id:"auth",label:"본인인증",kind:"toggle",opt:["도입","미도입"]},
+     {id:"auth",label:"본인인증 (도입 시 업체 선택)",kind:"single",opt:["NICE","KCB","SCI","KCP","다날","미도입"]},
      {id:"social",label:"간편로그인",kind:"multi",opt:["카카오","네이버","구글","애플","미사용"]},
      {id:"push",label:"푸시·문자",kind:"toggle",opt:["사용","미사용"]},
      {id:"couponmall",label:"외부 쿠폰몰",kind:"toggle",opt:["사용","미사용"]},

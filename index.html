@@ -136,13 +136,19 @@ const STEPS=[
  {tag:"1단계",title:"계약 & 필수 서류",desc:"계약을 체결하고 회사 서류·담당자 정보를 제출해요. 서류를 전부 제출해야 다음 단계로 넘어갑니다.",
   fields:[
    {k:"contract",type:"radio",label:"계약 체결이 완료되었나요?",req:true,options:["완료","진행 중"],mustBe:"완료",block:"계약 체결이 완료되어야 다음 단계로 넘어갈 수 있어요."},
-   {k:"docs",type:"checklist",label:"구비 서류 (전부 제출해야 넘어가요)",req:true,items:[
+   {k:"docs",type:"checklist",label:"구비 서류 제출 (파일은 슬랙·메일로 전달 후 체크해 주세요)",req:true,items:[
      {id:"biz",label:"사업자등록증 사본"},{id:"ecom",label:"통신판매업 신고증"},
-     {id:"corp",label:"법인 등기부등본",na:true},{id:"seal",label:"법인 인감증명서",na:true},
-     {id:"addr",label:"회사 주소"},{id:"bizno",label:"사업자등록번호"},
-     {id:"csnum",label:"고객센터 대표번호"},{id:"kakao",label:"고객센터 카카오톡 채널명"},{id:"email",label:"고객센터 이메일"} ]},
-   {k:"mgrs",type:"checklist",label:"담당자 3인 지정",req:true,items:[
-     {id:"bill",label:"청구 담당자"},{id:"tax",label:"세금계산서 발행 담당자"},{id:"cpo",label:"개인정보 보호책임자(CPO) · 법적 필수"} ]} ]},
+     {id:"corp",label:"법인 등기부등본",na:true},{id:"seal",label:"법인 인감증명서",na:true} ]},
+   {k:"bizinfo",type:"inputs",label:"사업자 정보 입력",req:true,items:[
+     {id:"addr",label:"회사 주소 (사업자등록증과 동일하게)",ph:"서울특별시 ○○구 ○○로 00, 0층"},
+     {id:"bizno",label:"사업자등록번호",ph:"000-00-00000"},
+     {id:"csnum",label:"고객센터 대표번호",ph:"1544-0000"},
+     {id:"kakao",label:"고객센터 카카오톡 채널명",ph:"@브랜드명"},
+     {id:"email",label:"고객센터 이메일",ph:"cs@brand.co.kr"} ]},
+   {k:"mgrs",type:"inputs",label:"담당자 3인 지정 (이름 · 연락처 · 이메일)",req:true,items:[
+     {id:"bill",label:"청구 담당자",ph:"홍길동 / 010-0000-0000 / bill@brand.co.kr"},
+     {id:"tax",label:"세금계산서 발행 담당자",ph:"홍길동 / 010-0000-0000 / tax@brand.co.kr"},
+     {id:"cpo",label:"개인정보 보호책임자(CPO) — 법적 필수",ph:"홍길동 / 010-0000-0000 / cpo@brand.co.kr"} ]} ]},
  {tag:"2단계",title:"약관 & 외부 연동",desc:"약관을 표준 그대로 쓸지·변경할지 정하고, 어떤 외부 연동 채널을 쓸지 결정해요.",
   fields:[
    {k:"terms",type:"terms",label:"약관 9종 — 표준 그대로 / 변경 요청 (전부 선택해야 넘어가요)",req:true,items:[
@@ -182,6 +188,7 @@ function fieldDone(f,data){
   if(f.type==="checklist"){if(!f.req)return true;return f.items.every(it=>{const s=(v||{})[it.id];return s==="done"||(it.na&&s==="na");});}
   if(f.type==="terms")return f.items.every((t,i)=>(v||{})[i]&&(v||{})[i].choice);
   if(f.type==="channels")return f.items.every(it=>{const cv=(v||{})[it.id];if(it.kind==="multi")return Array.isArray(cv)&&cv.length>0;return !!cv;});
+  if(f.type==="inputs"){if(!f.req)return true;return f.items.every(it=>it.opt||(((v||{})[it.id])||"").trim());}
   return true;
 }
 const stepDone=(si,data)=>STEPS[si].fields.every(f=>fieldDone(f,data));
@@ -290,6 +297,11 @@ function fieldHtml(f,data){
         <button class="opt warn ${tv.choice==="변경"?"on":""}" data-term="${f.k}" data-i="${i}" data-val="변경">변경 요청</button></div></div>
         ${tv.choice==="변경"?`<input class="note" placeholder="변경 요청 내용을 적어주세요" data-tnote="${f.k}" data-i="${i}" value="${esc(tv.note||"")}">`:""}</div>`;}).join("");
     return `<div class="field"><div class="flabel">${esc(f.label)} <span class="req">필수</span></div>${rows}</div>`;}
+  if(f.type==="inputs"){
+    const rows=f.items.map(it=>{const val=(v||{})[it.id]||"";
+      return `<div style="margin-bottom:12px"><div class="hint" style="margin-bottom:5px">${esc(it.label)}${it.opt?"":" ·필수"}</div>
+        <input class="tinput" style="width:100%" data-tin="${f.k}" data-item="${it.id}" placeholder="${esc(it.ph||"")}" value="${esc(val)}"></div>`;}).join("");
+    return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':''}</div>${rows}</div>`;}
   if(f.type==="channels"){
     const rows=f.items.map(it=>{const cv=(v||{})[it.id];const multi=it.kind==="multi";
       return `<div class="chanrow"><span class="cname">${esc(it.label)}</span>
@@ -348,6 +360,7 @@ function answers(st,data){
     else if(f.type==="channels")f.items.forEach(it=>{const cv=(v||{})[it.id];
       const disp=Array.isArray(cv)?cv.map(x=>tag(x,x==="미사용"?"no":"")).join(""):(cv?tag(cv,(cv==="미사용"||cv==="미도입")?"no":""):"—");
       out+=kv(it.label,disp);});
+    else if(f.type==="inputs")f.items.forEach(it=>{const tv=((v||{})[it.id]||"").trim();out+=kv(it.label,tv?esc(tv):"—");});
   });
   return out;
 }
@@ -362,6 +375,10 @@ function bind(){
   document.querySelectorAll("[data-na]").forEach(el=>el.onclick=e=>{e.stopPropagation();setNa(el.dataset.na,el.dataset.item);});
   document.querySelectorAll("[data-term]").forEach(el=>el.onclick=()=>setTerm(el.dataset.term,+el.dataset.i,el.dataset.val));
   document.querySelectorAll("[data-tnote]").forEach(el=>el.oninput=()=>setTermNote(el.dataset.tnote,+el.dataset.i,el.value));
+  document.querySelectorAll("[data-tin]").forEach(el=>{
+    el.oninput=()=>{const k=el.dataset.tin;D()[k]=D()[k]||{};D()[k][el.dataset.item]=el.value;scheduleSave();};
+    el.onchange=()=>render();
+  });
   document.querySelectorAll("[data-chan]").forEach(el=>el.onclick=()=>setChan(el.dataset.chan,el.dataset.item,el.dataset.val,el.dataset.multi==="true"));
   document.querySelectorAll("[data-asel]").forEach(el=>el.onclick=()=>{S.adminSel=+el.dataset.asel;render();});
   document.querySelectorAll("[data-copy]").forEach(el=>el.onclick=()=>navigator.clipboard.writeText(el.dataset.copy).then(()=>el.textContent="복사됨 ✓"));

@@ -83,13 +83,22 @@ h1,h2,h3,h4,p{margin:0} button{font-family:inherit;cursor:pointer;letter-spacing
 .pol .pt{background:var(--section);padding:11px 15px;font-weight:800;font-size:14px;display:flex;gap:8px;align-items:center}
 .pol .pt .b{background:var(--blue-weak);color:var(--blue-ink);font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px}
 .pol .pd{padding:11px 15px;font-size:13.5px;color:var(--sub);line-height:1.62}
-.term details{margin-top:10px;border-top:1px dashed var(--line);padding-top:9px}
-.term summary{cursor:pointer;color:var(--blue);font-weight:700;font-size:13px;list-style:none}
-.term summary::-webkit-details-marker{display:none}
-.term summary::before{content:"▸ "}
-.term details[open] summary::before{content:"▾ "}
-.term .sm{margin-top:9px;font-size:13px;color:var(--sub);line-height:1.65;background:var(--section);border-radius:10px;padding:12px 14px}
-.term .sm .n{display:block;margin-top:7px;color:var(--muted);font-size:12px}
+.term .tcap{margin-top:9px;font-size:13px;color:var(--sub);line-height:1.6}
+.termfull{margin-top:10px;background:var(--section);border:1px solid var(--line);color:var(--blue);font-weight:700;font-size:13px;border-radius:10px;padding:8px 13px;cursor:pointer;transition:all .12s}
+.termfull:hover{background:var(--blue-weak);border-color:var(--blue)}
+.modal-bk{position:fixed;inset:0;z-index:100;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;padding:20px;animation:fade .15s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{background:var(--card);border-radius:18px;max-width:640px;width:100%;max-height:86vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.28);animation:rise .2s}
+.modal .mhd{display:flex;align-items:flex-start;gap:10px;padding:20px 22px 14px;border-bottom:1px solid var(--line)}
+.modal .mhd h3{flex:1;font-size:17px;font-weight:800;line-height:1.4;margin:0}
+.modal .mtag{display:inline-block;margin-left:7px;font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-weak);border-radius:6px;padding:2px 7px;vertical-align:middle}
+.modal .mclose{border:none;background:var(--section);color:var(--sub);width:30px;height:30px;border-radius:9px;font-size:15px;cursor:pointer;flex:none}
+.modal .mclose:hover{background:var(--line)}
+.modal .mbody{padding:18px 22px;overflow-y:auto;font-size:14px;line-height:1.75;color:var(--ink)}
+.modal .mbody p{margin:0 0 13px;white-space:pre-wrap}
+.modal .mbody p:last-child{margin-bottom:0}
+.modal .mfoot{padding:14px 22px;border-top:1px solid var(--line);text-align:right}
+.modal .mok{background:var(--blue);color:#fff;border:none;border-radius:11px;padding:11px 22px;font-weight:700;font-size:14px;cursor:pointer}
 textarea.ta{width:100%;border:1.5px solid var(--line-2);border-radius:12px;padding:13px 15px;font-family:inherit;font-size:15px;background:var(--card);color:var(--ink);min-height:120px;resize:vertical;line-height:1.6}
 textarea.ta:focus{outline:none;border-color:var(--blue)}
 .row{display:flex;align-items:center;gap:13px;padding:14px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--card);margin-bottom:9px;cursor:pointer;transition:border-color .15s,background .15s}
@@ -222,22 +231,81 @@ const STEPS=[
      {id:"bill",label:"청구 담당자",ph:"홍길동 / 010-0000-0000 / bill@brand.co.kr"},
      {id:"tax",label:"세금계산서 발행 담당자",ph:"홍길동 / 010-0000-0000 / tax@brand.co.kr"},
      {id:"cpo",label:"개인정보 보호책임자(CPO)",alabel:"개인정보 보호책임자",ph:"홍길동 / 010-0000-0000 / cpo@brand.co.kr"} ]} ]},
- {tag:"2단계",title:"약관 & 외부 연동",desc:"약관을 표준 그대로 쓸지·변경할지 정하고, 어떤 외부 연동 채널을 쓸지 결정해요.",
+ {tag:"2단계",title:"약관 & 외부 연동",desc:"자사앱에 들어갈 약관·동의 내용을 소프트먼트가 표준 양식으로 준비했어요. 항목마다 전문을 확인하고, 그대로 적용할지·변경할지 정해 주세요.",
   fields:[
-   {k:"terms",type:"terms",label:"약관 9종 — 표준 그대로 / 변경 요청 (전부 선택해야 넘어가요)",alabel:"약관 검토",req:true,items:[
-     {n:"서비스 이용약관",s:"자사앱·멤버십 전체 이용 규정이에요. 가입·이용·해지·이용자와 회사의 권리·의무·책임·분쟁 해결 기준을 담아요. 표준안은 일반적인 앱 서비스 기준으로 작성돼 있어요."},
-     {n:"개인정보 처리방침",s:"고객의 어떤 정보를 왜 수집하고 얼마나 보관·언제 파기하는지, 제3자 제공·이용자 권리를 고지하는 법정 필수 문서예요."},
-     {n:"위치기반 서비스 이용약관",s:"'매장 찾기' 등 위치정보를 이용할 때 필요한 동의 규정(위치정보법)이에요. 위치 기능을 쓰지 않으면 생략 가능해요."},
-     {n:"마케팅 정보 수신 동의",s:"광고성 푸시·문자·이메일 발송에 대한 동의(선택 항목)예요. 미동의해도 서비스 이용에는 지장이 없어요."},
-     {n:"푸시 알림 수신 동의",s:"앱 푸시 알림 발송에 대한 동의예요. 주문·적립·쿠폰 알림에 사용돼요."},
-     {n:"만 14세 미만 법정대리인 동의",s:"만 14세 미만 고객 가입을 허용할 경우, 법정대리인 동의를 받는 절차 규정이에요. 미허용이면 필요 없어요."},
-     {n:"본인확인 서비스 이용 동의",s:"휴대폰 본인확인(CI/DI) 이용에 대한 동의예요. 본인인증을 도입할 때 적용돼요."},
-     {n:"개인정보 제3자 제공 동의",s:"PG·본인인증 등 외부 업체에 회원 정보를 제공할 때 필요한 동의예요. 제공받는 자·목적·항목·보유기간을 명시해요."},
-     {n:"취소·환불 정책",s:"멤버십 결제·상품의 취소·환불 규정이에요. 표준 권장값은 '잔액 환불 60% / 유효기간 만료 시 90% 소멸' 등으로 설정돼 있어요."}]},
+   {k:"terms",type:"terms",label:"약관 9종 — 표준 그대로 / 변경 요청 (전부 선택해야 넘어가요)",alabel:"약관 검토",req:true,
+    guide:{what:"각 약관의 [📄 표준 양식 전문 보기]를 누르면, 실제 자사앱에 적용될 약관·동의 내용 전문을 확인할 수 있어요.",ours:"내부 법무 검토 후 이대로 적용할지 / 변경이 필요한지 항목별로 결정해 주세요. '변경 요청'에 남기신 내용은 그대로 개발·법무에 전달됩니다."},items:[
+     {n:"서비스 이용약관",s:"자사앱·멤버십 전체 이용 규정이에요. 가입·이용·해지, 이용자와 회사의 권리·의무·책임·분쟁 해결 기준을 담아요.",full:[
+       "제1조(목적) 본 약관은 회사가 제공하는 자사앱 및 멤버십 서비스(이하 '서비스')의 이용과 관련하여 회사와 회원 간의 권리·의무 및 책임사항, 이용조건 및 절차를 규정함을 목적으로 합니다.",
+       "제2조(정의) ① '서비스'란 회사가 모바일 애플리케이션을 통해 제공하는 멤버십 적립·쿠폰·주문 및 이에 부수하는 서비스를 말합니다. ② '회원'이란 본 약관에 동의하고 회원가입을 완료한 자를 말합니다. ③ '포인트·스탬프'란 서비스 이용 시 적립되어 혜택으로 교환할 수 있는, 회사가 정한 단위를 말합니다.",
+       "제3조(약관의 게시와 개정) ① 회사는 본 약관을 앱 초기화면 또는 연결화면에 게시합니다. ② 회사는 관련 법령을 위배하지 않는 범위에서 약관을 개정할 수 있으며, 개정 시 적용일자와 개정사유를 명시하여 적용일 7일 전(회원에게 불리하거나 중대한 변경은 30일 전)부터 공지합니다.",
+       "제4조(이용계약의 성립) 이용자가 회사가 정한 절차에 따라 회원정보를 기재하고 본 약관에 동의함으로써 이용을 신청하고, 회사가 이를 승낙함으로써 이용계약이 성립합니다.",
+       "제5조(서비스의 제공 및 변경) 회사는 연중무휴 1일 24시간 서비스 제공을 원칙으로 하되, 시스템 점검·교체·고장, 통신 두절 등 부득이한 사유가 있는 경우 서비스의 전부 또는 일부를 제한하거나 중지할 수 있습니다.",
+       "제6조(회원의 의무) 회원은 타인의 정보를 도용하거나 회사의 운영을 방해하는 행위, 부정한 방법으로 적립·혜택을 취득하는 행위를 하여서는 안 됩니다.",
+       "제7조(계약 해지 및 이용 제한) ① 회원은 언제든지 앱 내 메뉴를 통해 탈퇴를 요청할 수 있습니다. ② 회사는 회원이 본 약관을 위반한 경우 사전 통지 후 서비스 이용을 제한하거나 회원자격을 상실시킬 수 있습니다.",
+       "제8조(책임 제한) 회사는 천재지변, 회원의 귀책사유로 인한 손해에 대하여 책임을 지지 않습니다.",
+       "제9조(준거법 및 관할) 본 약관은 대한민국 법령에 따라 규율·해석되며, 서비스 이용으로 발생한 분쟁에 대하여는 회사 소재지를 관할하는 법원을 관할법원으로 합니다."]},
+     {n:"개인정보 처리방침",s:"어떤 정보를 왜 수집하고 얼마나 보관·언제 파기하는지, 제3자 제공·이용자 권리를 고지하는 법정 필수 문서예요.",full:[
+       "1. 수집하는 개인정보 항목 — (필수) 휴대전화번호, 이름 또는 닉네임, 단말기 정보 / (선택) 이메일, 생년월일 / (자동수집) 서비스 이용기록, 접속 로그, 기기식별정보, 쿠키.",
+       "2. 개인정보의 수집·이용 목적 — 회원 식별 및 관리, 멤버십 적립·쿠폰 제공, 주문·결제 처리, 고객 문의 대응, 법령상 의무 이행.",
+       "3. 개인정보의 보유 및 이용기간 — 회원 탈퇴 시 지체 없이 파기함을 원칙으로 하되, 관계 법령에 따라 보존이 필요한 경우 해당 기간 보관합니다. (계약·청약철회 기록 5년, 대금결제·재화공급 기록 5년, 소비자 불만·분쟁처리 기록 3년, 표시·광고 기록 6개월)",
+       "4. 개인정보의 제3자 제공 — 회사는 원칙적으로 개인정보를 외부에 제공하지 않으며, 결제(PG)·본인확인 등 서비스 제공에 필요한 경우 별도 동의를 받아 제공합니다.",
+       "5. 개인정보 처리위탁 — 회사는 서비스 운영을 위해 클라우드 인프라(AWS 등) 및 알림 발송 업무를 외부에 위탁할 수 있으며, 위탁 사실을 본 방침에 공개합니다.",
+       "6. 이용자와 법정대리인의 권리 — 이용자는 언제든지 본인의 개인정보를 조회·수정·삭제 및 처리정지를 요청할 수 있습니다.",
+       "7. 개인정보 보호책임자 — 회사는 개인정보 보호책임자를 지정하여 이용자의 고충을 처리합니다. (성명·연락처는 실제 운영 정보로 기재)",
+       "8. 파기 절차 및 방법 — 전자적 파일은 복구 불가능한 방법으로, 출력물은 분쇄 또는 소각하여 파기합니다.",
+       "9. 개정 안내 — 본 방침의 내용 변경 시 시행일 및 변경 사유를 앱을 통해 사전 공지합니다."]},
+     {n:"위치기반 서비스 이용약관",s:"'매장 찾기' 등 위치정보를 이용할 때 필요한 동의 규정(위치정보법)이에요. 위치 기능을 쓰지 않으면 생략 가능해요.",full:[
+       "제1조(목적) 본 약관은 회사가 제공하는 위치기반서비스(매장 찾기, 주변 매장·혜택 알림 등)의 이용에 관한 회사와 이용자 간의 권리·의무 및 책임사항을 규정합니다.",
+       "제2조(서비스 내용) 회사는 이용자의 현재 위치를 기반으로 가까운 매장 정보, 길찾기, 위치 기반 혜택 알림을 제공합니다.",
+       "제3조(개인위치정보의 이용·제공) ① 회사는 위치정보의 보호 및 이용 등에 관한 법률에 따라 이용자의 동의를 받아 개인위치정보를 수집·이용합니다. ② 이용자는 언제든지 위치정보 이용 동의의 전부 또는 일부를 철회할 수 있습니다.",
+       "제4조(개인위치정보의 보유기간) 회사는 위치기반서비스 제공 목적을 달성한 경우 개인위치정보를 지체 없이 파기합니다. 다만 위치정보의 이용·제공 사실 확인자료는 관계 법령에 따라 최소 6개월 이상 보관합니다.",
+       "제5조(8세 이하 아동 등의 보호) 회사는 8세 이하 아동 등의 보호의무자가 동의하는 경우, 해당 아동의 생명·신체 보호를 위한 목적에 한하여 위치정보를 이용합니다.",
+       "제6조(이용자의 권리) 이용자는 개인위치정보의 이용·제공 내역에 대한 열람·고지를 요구할 수 있으며, 회사는 지체 없이 조치합니다.",
+       "※ 위치 기능을 사용하지 않는 경우 본 약관은 적용되지 않습니다."]},
+     {n:"마케팅 정보 수신 동의",s:"광고성 푸시·문자·이메일 발송에 대한 동의(선택 항목)예요. 미동의해도 서비스 이용에는 지장이 없어요.",full:[
+       "1. 목적 — 회사는 신규 서비스·이벤트·할인·쿠폰 등 광고성 정보를 안내하기 위해 이용자의 동의를 받아 마케팅 정보를 발송합니다.",
+       "2. 수신 채널 — 앱 푸시, 문자(SMS/LMS), 이메일, 카카오 알림톡·친구톡 등.",
+       "3. 수집·이용 항목 — 휴대전화번호, 이메일, 이용·구매 이력, 관심 정보.",
+       "4. 선택 동의 안내 — 본 동의는 선택사항이며, 동의하지 않아도 서비스의 본질적 이용에는 제한이 없습니다.",
+       "5. 동의 철회 — 이용자는 언제든지 앱 설정 또는 수신 거부를 통해 동의를 철회할 수 있으며, 철회 즉시 광고성 정보 발송이 중단됩니다.",
+       "6. 야간 전송 제한 — 광고성 정보는 오후 9시부터 다음 날 오전 8시까지 원칙적으로 발송하지 않으며, 야간 발송이 필요한 경우 별도 수신 동의를 받습니다."]},
+     {n:"푸시 알림 수신 동의",s:"앱 푸시 알림 발송에 대한 동의예요. 주문·적립·쿠폰 등 서비스 알림에 사용돼요.",full:[
+       "1. 목적 — 회사는 주문 상태, 적립·쿠폰 발급, 유효기간 만료 예정 등 서비스 이용에 관한 알림을 앱 푸시로 발송합니다.",
+       "2. 알림 종류 — (거래성) 주문·결제·적립·쿠폰 등 서비스 필수 알림 / (광고성) 이벤트·프로모션 알림. 광고성 알림은 마케팅 정보 수신 동의에 따릅니다.",
+       "3. 설정 변경 — 이용자는 단말기 또는 앱 설정에서 언제든지 푸시 알림 수신을 켜거나 끌 수 있습니다.",
+       "4. 안내 — 푸시 알림을 끄더라도 법령상·거래상 반드시 고지해야 하는 정보는 다른 수단으로 안내될 수 있습니다."]},
+     {n:"만 14세 미만 법정대리인 동의",s:"만 14세 미만 가입을 허용할 경우, 법정대리인 동의를 받는 절차 규정이에요. 미허용이면 필요 없어요.",full:[
+       "1. 목적 — 만 14세 미만 아동의 회원가입 및 개인정보 처리를 위해서는 법정대리인의 동의가 필요합니다.",
+       "2. 동의 절차 — 아동 가입 시 법정대리인의 정보를 확인하고 동의를 받은 후에만 가입을 승낙합니다.",
+       "3. 법정대리인의 권리 — 법정대리인은 아동의 개인정보에 대한 열람·정정·삭제 및 처리정지를 요구할 수 있습니다.",
+       "4. 미허용 시 — 회사가 만 14세 미만 가입을 허용하지 않는 경우, 가입 단계에서 만 14세 미만의 가입을 제한합니다.",
+       "※ 만 14세 미만 가입을 받지 않는 경우 본 동의 절차는 적용되지 않습니다."]},
+     {n:"본인확인 서비스 이용 동의",s:"휴대폰 본인확인(CI/DI) 이용에 대한 동의예요. 본인인증을 도입할 때 적용돼요.",full:[
+       "1. 목적 — 회사는 부정가입·명의도용 방지 및 법령상 본인확인이 필요한 경우 휴대폰 본인확인 서비스를 이용합니다.",
+       "2. 본인확인 기관 — 본인확인은 본인확인기관(다날) 및 이동통신사를 통해 이루어집니다.",
+       "3. 수집·이용 항목 — 이름, 생년월일, 성별, 내/외국인 구분, 휴대전화번호, 중복가입확인정보(DI), 연계정보(CI).",
+       "4. 이용 목적 — 본인 식별, 중복 가입 확인, 부정 이용 방지.",
+       "5. 안내 — 본인확인 시 생성되는 CI/DI는 회원 식별 목적으로만 이용되며, 본인확인기관의 개인정보 처리방침이 함께 적용됩니다.",
+       "※ 본인인증을 도입하지 않는 경우 본 동의는 적용되지 않습니다."]},
+     {n:"개인정보 제3자 제공 동의",s:"PG·본인확인 등 외부 업체에 회원 정보를 제공할 때 필요한 동의예요. 제공받는 자·목적·항목·보유기간을 명시해요.",full:[
+       "1. 목적 — 회사는 결제 및 본인확인 등 서비스 제공에 필요한 범위에서 아래와 같이 회원의 개인정보를 제3자에게 제공합니다.",
+       "2. 제공받는 자 — 결제대행사(PG), 본인확인기관(다날), 기타 서비스 제공에 필요한 제휴사.",
+       "3. 제공 항목 — 이름, 휴대전화번호, 결제정보, 본인확인정보(CI/DI) 등 각 목적에 필요한 최소한의 항목.",
+       "4. 제공 목적 — 결제·정산 처리, 본인확인, 서비스 제공 및 부정거래 방지.",
+       "5. 보유·이용기간 — 제공 목적 달성 시까지 또는 관계 법령이 정한 기간까지.",
+       "6. 동의 거부 권리 — 이용자는 제3자 제공에 동의하지 않을 권리가 있으나, 결제·본인확인 등 필수 기능은 동의가 없으면 이용이 제한될 수 있습니다."]},
+     {n:"취소·환불 정책",s:"멤버십 결제·상품의 취소·환불 규정이에요. 표준 권장값(잔액 환불·유효기간 소멸 기준 등)을 담아요.",full:[
+       "1. 결제 취소 — 이용자는 결제 후 서비스(상품·쿠폰 등)를 사용하지 않은 경우 관련 법령에 따라 결제를 취소하고 환불받을 수 있습니다.",
+       "2. 선불 충전금 환불 — 충전 후 잔액은 이용자의 요청에 따라 환불하며, 표준 권장 기준은 '최종 충전액의 60% 이상 사용 시 잔액 100% 환불'이고, 그 외의 경우 관련 법령 및 회사 정책에 따릅니다.",
+       "3. 유효기간 만료 — 발급된 포인트·스탬프·쿠폰은 정해진 유효기간이 만료되면 소멸되며, 소멸 예정 사실은 사전에 안내합니다.",
+       "4. 환불 방법 및 기한 — 환불은 원 결제수단으로 처리함을 원칙으로 하며, 영업일 기준 3~7일 이내 처리됩니다.",
+       "5. 부정 이용 시 — 부정한 방법으로 적립·취득한 혜택은 환불·정산에서 제외되며 회수될 수 있습니다.",
+       "※ 실제 환불 비율·기간은 브랜드 정책 및 관련 법령에 맞춰 최종 확정합니다."]}]},
    {k:"sensitive",type:"radio",label:"민감정보(주민번호 등)를 수집하시나요?",alabel:"민감정보 수집",req:true,options:["수집 안 함","수집함"]},
    {k:"channels",type:"channels",label:"외부 연동 채널 결정 (전부 선택해야 넘어가요)",alabel:"외부 연동",req:true,items:[
      {id:"alimtalk",label:"카카오 알림톡",kind:"toggle",opt:["사용","미사용"]},
-     {id:"auth",label:"본인인증 (도입 시 업체 선택)",kind:"single",opt:["NICE","KCB","SCI","KCP","다날","미도입"]},
+     {id:"auth",label:"휴대폰 본인인증 (다날)",kind:"toggle",opt:["사용","미사용"]},
      {id:"social",label:"간편로그인",kind:"multi",opt:["카카오","네이버","구글","애플","미사용"]},
      {id:"push",label:"푸시·문자",kind:"toggle",opt:["사용","미사용"]},
      {id:"couponmall",label:"외부 쿠폰몰",kind:"toggle",opt:["사용","미사용"]},
@@ -424,9 +492,10 @@ function fieldHtml(f,data){
       return `<div class="term"><div class="thead"><span class="tname">${i+1}. ${esc(t.n)}</span>
         <div class="opts"><button class="opt ${tv.choice==="표준"?"on":""}" data-term="${f.k}" data-i="${i}" data-val="표준">표준 그대로</button>
         <button class="opt warn ${tv.choice==="변경"?"on":""}" data-term="${f.k}" data-i="${i}" data-val="변경">변경 요청</button></div></div>
-        ${t.s?`<details><summary>표준 양식 펼쳐보기</summary><div class="sm">${esc(t.s)}<span class="n">※ 전체 약관 원문은 STEP 2 노션 페이지에서 내려받아 검토하실 수 있어요.</span></div></details>`:""}
+        ${t.s?`<div class="tcap">${esc(t.s)}</div>`:""}
+        ${t.full?`<button class="termfull" data-termfull="${f.k}" data-i="${i}">📄 표준 양식 전문 보기</button>`:""}
         ${tv.choice==="변경"?`<input class="note" placeholder="변경 요청 내용을 적어주세요" data-tnote="${f.k}" data-i="${i}" value="${esc(tv.note||"")}">`:""}</div>`;}).join("");
-    return `<div class="field"><div class="flabel">${esc(f.label)} <span class="req">필수</span></div>${rows}</div>`;}
+    return `<div class="field"><div class="flabel">${esc(f.label)} <span class="req">필수</span></div>${gb}${rows}</div>`;}
   if(f.type==="channels"){
     const rows=f.items.map(it=>{const cv=(v||{})[it.id];const multi=it.kind==="multi";
       return `<div class="chanrow"><span class="cname">${esc(it.label)}</span>
@@ -552,7 +621,20 @@ function openPdf(b){
 }
 
 /* ================= events ================= */
+function findField(fk){for(const st of STEPS)for(const f of st.fields)if(f.k===fk)return f;return null;}
+function openTermFull(fk,i){
+  const f=findField(fk);if(!f||!f.items[i])return;const t=f.items[i];
+  const paras=(t.full||[t.s||""]).map(p=>`<p>${esc(p)}</p>`).join("");
+  const bk=document.createElement("div");bk.className="modal-bk";
+  bk.innerHTML=`<div class="modal" role="dialog" aria-modal="true"><div class="mhd"><h3>${i+1}. ${esc(t.n)}<span class="mtag">표준 양식 전문</span></h3><button class="mclose" aria-label="닫기">✕</button></div><div class="mbody">${paras}</div><div class="mfoot"><button class="mok">확인</button></div></div>`;
+  const close=()=>{bk.remove();document.removeEventListener("keydown",onKey);};
+  function onKey(e){if(e.key==="Escape")close();}
+  bk.addEventListener("click",e=>{if(e.target===bk)close();});
+  bk.querySelector(".mclose").onclick=close;bk.querySelector(".mok").onclick=close;
+  document.addEventListener("keydown",onKey);document.body.appendChild(bk);
+}
 function bind(){
+  document.querySelectorAll("[data-termfull]").forEach(el=>el.onclick=()=>openTermFull(el.dataset.termfull,+el.dataset.i));
   document.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>{if(el.hasAttribute("disabled"))return;S.viewStep=+el.dataset.go;render();window.scrollTo({top:0,behavior:"smooth"});});
   document.querySelectorAll("[data-toggle]").forEach(el=>el.onclick=()=>{const k=el.dataset.toggle;set(k,D()[k]===true?false:true);});
   document.querySelectorAll("[data-input]").forEach(el=>el.onchange=()=>set(el.dataset.input,el.value));

@@ -79,6 +79,19 @@ h1,h2,h3,h4,p{margin:0} button{font-family:inherit;cursor:pointer;letter-spacing
 .guide .tagx{font-weight:800;margin-right:4px}
 .guide .go .tagx{color:var(--blue)}
 .guide b{font-weight:800}
+.pol{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:9px}
+.pol .pt{background:var(--section);padding:11px 15px;font-weight:800;font-size:14px;display:flex;gap:8px;align-items:center}
+.pol .pt .b{background:var(--blue-weak);color:var(--blue-ink);font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px}
+.pol .pd{padding:11px 15px;font-size:13.5px;color:var(--sub);line-height:1.62}
+.term details{margin-top:10px;border-top:1px dashed var(--line);padding-top:9px}
+.term summary{cursor:pointer;color:var(--blue);font-weight:700;font-size:13px;list-style:none}
+.term summary::-webkit-details-marker{display:none}
+.term summary::before{content:"▸ "}
+.term details[open] summary::before{content:"▾ "}
+.term .sm{margin-top:9px;font-size:13px;color:var(--sub);line-height:1.65;background:var(--section);border-radius:10px;padding:12px 14px}
+.term .sm .n{display:block;margin-top:7px;color:var(--muted);font-size:12px}
+textarea.ta{width:100%;border:1.5px solid var(--line-2);border-radius:12px;padding:13px 15px;font-family:inherit;font-size:15px;background:var(--card);color:var(--ink);min-height:120px;resize:vertical;line-height:1.6}
+textarea.ta:focus{outline:none;border-color:var(--blue)}
 .row{display:flex;align-items:center;gap:13px;padding:14px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--card);margin-bottom:9px;cursor:pointer;transition:border-color .15s,background .15s}
 .row:hover{border-color:var(--line-2)}
 .row.on{border-color:var(--blue);background:var(--blue-weak)}
@@ -212,7 +225,15 @@ const STEPS=[
  {tag:"2단계",title:"약관 & 외부 연동",desc:"약관을 표준 그대로 쓸지·변경할지 정하고, 어떤 외부 연동 채널을 쓸지 결정해요.",
   fields:[
    {k:"terms",type:"terms",label:"약관 9종 — 표준 그대로 / 변경 요청 (전부 선택해야 넘어가요)",alabel:"약관 검토",req:true,items:[
-     "서비스 이용약관","개인정보 처리방침","위치기반 서비스 이용약관","마케팅 정보 수신 동의","푸시 알림 수신 동의","만 14세 미만 법정대리인 동의","본인확인 서비스 이용 동의","개인정보 제3자 제공 동의","취소·환불 정책"]},
+     {n:"서비스 이용약관",s:"자사앱·멤버십 전체 이용 규정이에요. 가입·이용·해지·이용자와 회사의 권리·의무·책임·분쟁 해결 기준을 담아요. 표준안은 일반적인 앱 서비스 기준으로 작성돼 있어요."},
+     {n:"개인정보 처리방침",s:"고객의 어떤 정보를 왜 수집하고 얼마나 보관·언제 파기하는지, 제3자 제공·이용자 권리를 고지하는 법정 필수 문서예요."},
+     {n:"위치기반 서비스 이용약관",s:"'매장 찾기' 등 위치정보를 이용할 때 필요한 동의 규정(위치정보법)이에요. 위치 기능을 쓰지 않으면 생략 가능해요."},
+     {n:"마케팅 정보 수신 동의",s:"광고성 푸시·문자·이메일 발송에 대한 동의(선택 항목)예요. 미동의해도 서비스 이용에는 지장이 없어요."},
+     {n:"푸시 알림 수신 동의",s:"앱 푸시 알림 발송에 대한 동의예요. 주문·적립·쿠폰 알림에 사용돼요."},
+     {n:"만 14세 미만 법정대리인 동의",s:"만 14세 미만 고객 가입을 허용할 경우, 법정대리인 동의를 받는 절차 규정이에요. 미허용이면 필요 없어요."},
+     {n:"본인확인 서비스 이용 동의",s:"휴대폰 본인확인(CI/DI) 이용에 대한 동의예요. 본인인증을 도입할 때 적용돼요."},
+     {n:"개인정보 제3자 제공 동의",s:"PG·본인인증 등 외부 업체에 회원 정보를 제공할 때 필요한 동의예요. 제공받는 자·목적·항목·보유기간을 명시해요."},
+     {n:"취소·환불 정책",s:"멤버십 결제·상품의 취소·환불 규정이에요. 표준 권장값은 '잔액 환불 60% / 유효기간 만료 시 90% 소멸' 등으로 설정돼 있어요."}]},
    {k:"sensitive",type:"radio",label:"민감정보(주민번호 등)를 수집하시나요?",alabel:"민감정보 수집",req:true,options:["수집 안 함","수집함"]},
    {k:"channels",type:"channels",label:"외부 연동 채널 결정 (전부 선택해야 넘어가요)",alabel:"외부 연동",req:true,items:[
      {id:"alimtalk",label:"카카오 알림톡",kind:"toggle",opt:["사용","미사용"]},
@@ -221,32 +242,21 @@ const STEPS=[
      {id:"push",label:"푸시·문자",kind:"toggle",opt:["사용","미사용"]},
      {id:"couponmall",label:"외부 쿠폰몰",kind:"toggle",opt:["사용","미사용"]},
      {id:"extpoint",label:"외부 포인트·결제",kind:"toggle",opt:["사용","미사용"]} ]} ]},
- {tag:"3단계",title:"멤버십 정책 설계",desc:"처음이셔도 괜찮아요. 지금 제공되는 기능과 '보통 브랜드들이 하는 방식'을 함께 안내해 드려요. 골라만 주세요.",
+ {tag:"3단계",title:"멤버십 정책 설계",desc:"처음이셔도 괜찮아요. 지금 더벤티에서 운영 중인 검증된 정책을 그대로 안내해 드려요. 이대로 진행하거나, 바꾸고 싶은 점을 남겨주세요.",
   fields:[
-   {k:"base_ok",type:"confirm",req:true,alabel:"기본 기능 확인",
-     label:"기본 제공 기능을 확인했어요.",
-     guide:{what:"회원 가입·관리, 매장·메뉴 관리, 고객 이용이력·매출 조회, 결제(PG) 연동은 <b>추가 개발 없이 기본 제공</b>돼요.",usual:"대부분의 브랜드가 이 기본 구성을 그대로 사용합니다.",ours:"결제는 소프트먼트 PG로 연결되며, 더벤티에서 검증된 구조를 그대로 제공해요."}},
-   {k:"reward",type:"radio",req:true,alabel:"적립 방식",options:["스탬프","포인트(적립금)","둘 다"],
-     label:"적립 방식을 골라주세요",
-     guide:{what:"<b>스탬프</b>는 도장 모으기(예: 10개 → 무료음료). <b>포인트</b>는 결제액의 일정 %를 현금처럼 적립·사용해요.",usual:"카페·외식 프랜차이즈는 정산이 단순한 <b>스탬프</b>를 주로 씁니다. (더벤티도 스탬프)",ours:"둘 다 지원하지만, 매장 간 정산·회계가 단순하도록 <b>하나만</b> 고르시길 권장드려요."}},
-   {k:"stamp_earn",type:"radio",req:true,alabel:"스탬프 적립 기준",options:["1잔(1건)당 1개","결제 금액당","방문당"],
-     label:"스탬프를 어떤 기준으로 적립할까요?",showIf:d=>["스탬프","둘 다"].includes(d.reward),
-     guide:{usual:"음료 브랜드는 '1잔당 도장 1개'가 가장 직관적이에요.",ours:"금액당·방문당 적립도 지원해요."}},
-   {k:"stamp_reward",type:"inputs",req:true,alabel:"스탬프 보상",showIf:d=>["스탬프","둘 다"].includes(d.reward),
-     label:"스탬프 완성 개수와 보상",items:[{id:"count",label:"완성 개수",ph:"예: 10"},{id:"gift",label:"보상",ph:"예: 아메리카노 1잔 무료 쿠폰"}],
-     guide:{usual:"더벤티는 <b>10개를 모으면 무료음료 쿠폰이 자동 발급</b>돼요.",ours:"완성 시 쿠폰 자동 발급까지 구현돼 있어요."}},
-   {k:"stamp_exp",type:"radio",req:true,alabel:"스탬프 유효기간",options:["6개월","12개월","무제한"],showIf:d=>["스탬프","둘 다"].includes(d.reward),
-     label:"스탬프 유효기간",guide:{usual:"보통 12개월을 많이 사용해요."}},
-   {k:"point_rate",type:"inputs",req:true,alabel:"포인트 적립률",showIf:d=>["포인트(적립금)","둘 다"].includes(d.reward),
-     label:"포인트 적립률·사용 기준",items:[{id:"rate",label:"기본 적립률 (%)",ph:"예: 5"},{id:"min",label:"최소 사용 금액",ph:"예: 1,000원부터"}],
-     guide:{usual:"보통 결제액의 1~5%를 적립합니다.",ours:"등급별 차등 적립도 가능해요."}},
-   {k:"coupon_when",type:"multi",req:true,alabel:"쿠폰 발급 계기",options:["가입 축하","생일","스탬프 완성 자동","수시 이벤트"],
-     label:"쿠폰을 언제 발급할까요? (여러 개 선택 가능)",
-     guide:{what:"쿠폰은 본사가 발급해요.",usual:"'가입 축하 + 스탬프 완성 자동 발급' 조합을 가장 많이 씁니다.",ours:"발급 계기·조건을 자유롭게 설정할 수 있어요."}},
-   {k:"coupon_type",type:"multi",req:true,alabel:"쿠폰 종류",options:["정액 할인","정률 할인","무료 증정"],label:"쿠폰 종류 (여러 개 선택 가능)"},
-   {k:"noti",type:"multi",req:true,alabel:"알림 발송 계기",options:["가입 환영","적립 알림","쿠폰 발급","이벤트 공지"],
-     label:"어떤 때 고객에게 알림을 보낼까요? (여러 개 선택 가능)",
-     guide:{what:"카카오 알림톡으로 발송돼요 (2단계에서 채널 결정).",usual:"가입 환영·쿠폰 발급 알림은 기본으로 켜두는 편이에요."}},
+   {k:"policy_info",type:"info",alabel:"기본 정책 안내",label:"더벤티에서 운영 중인 기본 멤버십 정책",
+     blocks:[
+       ["적립 방식","스탬프(도장 모으기) 방식. 결제하면 도장이 적립돼요. (매장 간 정산이 단순해 카페·외식에 적합)"],
+       ["스탬프 적립·보상","1잔(1건) = 도장 1개 · 10개를 모으면 무료 음료 쿠폰이 자동 발급 · 유효기간 12개월"],
+       ["쿠폰","본사가 발급 · 가입 축하 + 스탬프 완성 시 자동 발급 · 정액/정률/무료증정 지원"],
+       ["회원 가입","휴대폰 본인인증 기반 간편 가입 (카카오·네이버 등 소셜 로그인 병행 가능)"],
+       ["알림","카카오 알림톡으로 가입 환영·적립·쿠폰 발급 알림 발송"],
+       ["매장·메뉴·정산","매장/메뉴 관리, 이용이력·매출 조회 기본 제공 · 결제는 소프트먼트 PG로 연결"]]},
+   {k:"policy_decision",type:"radio",req:true,alabel:"정책 결정",options:["기본 정책 그대로 진행","변경·요청 있음"],
+     label:"위 기본 정책, 이대로 진행할까요?",
+     guide:{what:"기본 정책 그대로면 협의 없이 바로 개발에 착수해 가장 빠르게 오픈할 수 있어요.",usual:"처음 도입하는 브랜드는 대부분 기본 정책으로 시작한 뒤, 운영하며 조정합니다.",ours:"바꾸고 싶은 점이나 추가 요청이 있으면 아래에 남겨 주세요. 검토 후 반영해 드려요."}},
+   {k:"policy_note",type:"textarea",req:true,alabel:"변경·요청 사항",showIf:d=>d.policy_decision==="변경·요청 있음",
+     label:"변경 또는 요청 사항을 자유롭게 적어주세요",ph:"예) 스탬프는 8개로 하고 싶어요 / 회원 등급 제도도 넣을 수 있나요? / 생일 쿠폰을 추가하고 싶어요 / 특정 메뉴는 적립 제외해 주세요"},
    {k:"stores",type:"checklist",req:false,alabel:"가맹점 목록",items:[{id:"xls",label:"가맹점 리스트 엑셀 제출 (가맹점 운영 시)",na:true,file:true}],
      label:"가맹점 목록",guide:{what:"여러 매장을 운영하시면 매장 목록(엑셀)을 주세요. 전 매장 공통 적립·사용으로 세팅해 드려요."}} ]},
  {tag:"4단계",title:"자사앱 디자인",desc:"브랜드 자산과 필수 이미지를 전달하고, 화면 시안을 확정해요.",
@@ -265,10 +275,11 @@ const esc=s=>(""+s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"'
 const shortL=s=>(""+s).replace(/\s*\(.*?\)\s*/g," ").replace(/\s*·.*$/,"").trim()||s;
 function fieldDone(f,data){
   if(f.showIf && !f.showIf(data))return true;
+  if(f.type==="info")return true;
   const v=data[f.k];
   if(f.type==="multi")return !f.req||(Array.isArray(v)&&v.length>0);
   if(f.type==="confirm")return v===true;
-  if(f.type==="date"||f.type==="text")return !f.req||!!v;
+  if(f.type==="date"||f.type==="text"||f.type==="textarea")return !f.req||!!(v&&(""+v).trim());
   if(f.type==="radio"){if(!f.req)return true;if(!v)return false;return f.mustBe?v===f.mustBe:true;}
   if(f.type==="checklist"){if(!f.req)return true;return f.items.every(it=>{const s=(v||{})[it.id];return s==="done"||(it.na&&s==="na")||(s&&typeof s==="object"&&!!s.key);});}
   if(f.type==="terms")return f.items.every((t,i)=>(v||{})[i]&&(v||{})[i].choice);
@@ -376,6 +387,10 @@ function guideBox(g){return `<div class="guide">
 function fieldHtml(f,data){
   if(f.showIf && !f.showIf(data))return "";
   const v=data[f.k]; const gb=f.guide?guideBox(f.guide):"";
+  if(f.type==="info")
+    return `<div class="field"><div class="flabel">${esc(f.label)}</div>${gb}${f.blocks.map(b=>`<div class="pol"><div class="pt"><span class="b">기본</span>${esc(b[0])}</div><div class="pd">${esc(b[1])}</div></div>`).join("")}</div>`;
+  if(f.type==="textarea")
+    return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':''}</div>${gb}<textarea class="ta" data-ta="${f.k}" placeholder="${esc(f.ph||"")}">${esc(v||"")}</textarea></div>`;
   if(f.type==="confirm")
     return `<div class="field">${gb}<div class="row ${v===true?"on":""}" data-toggle="${f.k}"><span class="chk">${v===true?"✓":""}</span><span class="txt">${esc(f.label)}</span></div></div>`;
   if(f.type==="date"||f.type==="text")
@@ -406,9 +421,10 @@ function fieldHtml(f,data){
     return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':'<span class="hint">선택</span>'}</div>${gb}${rows}</div>`;}
   if(f.type==="terms"){
     const rows=f.items.map((t,i)=>{const tv=(v||{})[i]||{};
-      return `<div class="term"><div class="thead"><span class="tname">${i+1}. ${esc(t)}</span>
+      return `<div class="term"><div class="thead"><span class="tname">${i+1}. ${esc(t.n)}</span>
         <div class="opts"><button class="opt ${tv.choice==="표준"?"on":""}" data-term="${f.k}" data-i="${i}" data-val="표준">표준 그대로</button>
         <button class="opt warn ${tv.choice==="변경"?"on":""}" data-term="${f.k}" data-i="${i}" data-val="변경">변경 요청</button></div></div>
+        ${t.s?`<details><summary>표준 양식 펼쳐보기</summary><div class="sm">${esc(t.s)}<span class="n">※ 전체 약관 원문은 STEP 2 노션 페이지에서 내려받아 검토하실 수 있어요.</span></div></details>`:""}
         ${tv.choice==="변경"?`<input class="note" placeholder="변경 요청 내용을 적어주세요" data-tnote="${f.k}" data-i="${i}" value="${esc(tv.note||"")}">`:""}</div>`;}).join("");
     return `<div class="field"><div class="flabel">${esc(f.label)} <span class="req">필수</span></div>${rows}</div>`;}
   if(f.type==="channels"){
@@ -456,11 +472,12 @@ const arow=(k,v)=>`<div class="arow"><div class="ak">${esc(k)}</div><div class="
 const chip=(t,c="")=>`<span class="chip ${c}">${esc(t)}</span>`;
 function answers(st,data){
   let out="";
-  st.fields.forEach(f=>{if(f.showIf&&!f.showIf(data))return;const v=data[f.k];const lab=f.alabel||shortL(f.label);
+  st.fields.forEach(f=>{if(f.type==="info")return;if(f.showIf&&!f.showIf(data))return;const v=data[f.k];const lab=f.alabel||shortL(f.label);
     if(f.type==="multi"){const a=Array.isArray(v)?v:[];out+=arow(lab,a.length?a.map(x=>chip(x,"ok")).join(" "):"—");}
     else if(f.type==="confirm")out+=arow(lab,v===true?chip("완료 ✓","ok"):"—");
+    else if(f.type==="textarea")out+=arow(lab,v?`<span class="notequote">“${esc(v)}”</span>`:"—");
     else if(f.type==="date"||f.type==="text")out+=arow(lab,v?esc(v):"—");
-    else if(f.type==="radio")out+=arow(lab,v?chip(v,f.mustBe&&v!==f.mustBe?"chg":"ok"):"—");
+    else if(f.type==="radio")out+=arow(lab,v?chip(v,v==="변경·요청 있음"||(f.mustBe&&v!==f.mustBe)?"chg":"ok"):"—");
     else if(f.type==="inputs")f.items.forEach(it=>{const tv=(((v||{})[it.id])||"").trim();out+=arow(it.alabel||shortL(it.label),tv?`<span class="av plain">${esc(tv)}</span>`:"—");});
     else if(f.type==="checklist"){
       const parts=f.items.map(it=>{const s=(v||{})[it.id];
@@ -472,7 +489,7 @@ function answers(st,data){
     else if(f.type==="terms"){const arr=f.items.map((t,i)=>({t,c:(v||{})[i]}));
       const std=arr.filter(x=>x.c&&x.c.choice==="표준").length;const chg=arr.filter(x=>x.c&&x.c.choice==="변경");
       out+=arow(lab,`${chip("표준 그대로 "+std+"건","ok")} ${chg.length?chip("변경요청 "+chg.length+"건","chg"):chip("변경 0건","no")}`);
-      chg.forEach(x=>out+=arow("↳ "+shortL(x.t),`${chip("변경","chg")} <span class="notequote">${x.c.note?'“'+esc(x.c.note)+'”':"(내용 미기재)"}</span>`));}
+      chg.forEach(x=>out+=arow("↳ "+x.t.n,`${chip("변경","chg")} <span class="notequote">${x.c.note?'“'+esc(x.c.note)+'”':"(내용 미기재)"}</span>`));}
     else if(f.type==="channels")f.items.forEach(it=>{const cv=(v||{})[it.id];
       const disp=Array.isArray(cv)?(cv.length?cv.map(x=>chip(x,x==="미사용"?"no":"ok")).join(" "):"—"):(cv?chip(cv,(cv==="미사용"||cv==="미도입")?"no":"ok"):"—");
       out+=arow(it.label,disp);});
@@ -487,9 +504,10 @@ function openPdf(b){
   STEPS.forEach((st,si)=>{
     const done=stepDone(si,data);
     body+=`<div class="ps"><div class="ph">${esc(st.tag)} · ${esc(st.title)} <span class="pst ${done?"d":""}">${done?"완료":"미완료"}</span></div><table>`;
-    st.fields.forEach(f=>{if(f.showIf&&!f.showIf(data))return;const v=data[f.k];const lab=f.alabel||shortL(f.label);const push=(k,val)=>{body+=`<tr><td class="pk">${esc(k)}</td><td>${val}</td></tr>`;};
+    st.fields.forEach(f=>{if(f.type==="info")return;if(f.showIf&&!f.showIf(data))return;const v=data[f.k];const lab=f.alabel||shortL(f.label);const push=(k,val)=>{body+=`<tr><td class="pk">${esc(k)}</td><td>${val}</td></tr>`;};
       if(f.type==="multi"){const a=Array.isArray(v)?v:[];push(lab,a.length?esc(a.join(", ")):"—");}
       else if(f.type==="confirm")push(lab,v===true?"완료":"—");
+      else if(f.type==="textarea")push(lab,v?esc(v).replace(/\n/g,"<br>"):"—");
       else if(f.type==="date"||f.type==="text")push(lab,v?esc(v):"—");
       else if(f.type==="radio")push(lab,v?esc(v):"—");
       else if(f.type==="inputs")f.items.forEach(it=>{const tv=(((v||{})[it.id])||"").trim();push(it.alabel||shortL(it.label),tv?esc(tv):"—");});
@@ -499,7 +517,7 @@ function openPdf(b){
         push(lab,parts.join("<br>")||"—");}
       else if(f.type==="terms"){const arr=f.items.map((t,i)=>({t,c:(v||{})[i]}));const std=arr.filter(x=>x.c&&x.c.choice==="표준").length;const chg=arr.filter(x=>x.c&&x.c.choice==="변경");
         push(lab,"표준 그대로 "+std+"건 / 변경요청 "+chg.length+"건");
-        chg.forEach(x=>push("↳ "+shortL(x.t)+" 변경요청",x.c.note?esc(x.c.note):"(내용 미기재)"));}
+        chg.forEach(x=>push("↳ "+x.t.n+" 변경요청",x.c.note?esc(x.c.note):"(내용 미기재)"));}
       else if(f.type==="channels")f.items.forEach(it=>{const cv=(v||{})[it.id];push(it.label,Array.isArray(cv)?(cv.join(", ")||"—"):(cv||"—"));});
     });
     body+=`</table></div>`;
@@ -545,6 +563,7 @@ function bind(){
   document.querySelectorAll("[data-tnote]").forEach(el=>el.oninput=()=>setTermNote(el.dataset.tnote,+el.dataset.i,el.value));
   document.querySelectorAll("[data-chan]").forEach(el=>el.onclick=()=>setChan(el.dataset.chan,el.dataset.item,el.dataset.val,el.dataset.multi==="true"));
   document.querySelectorAll("[data-multi2]").forEach(el=>el.onclick=()=>setMulti(el.dataset.multi2,el.dataset.val));
+  document.querySelectorAll("[data-ta]").forEach(el=>{el.oninput=()=>{D()[el.dataset.ta]=el.value;scheduleSave();};el.onchange=()=>render();});
   document.querySelectorAll("[data-tin]").forEach(el=>{el.oninput=()=>{const k=el.dataset.tin;D()[k]=D()[k]||{};D()[k][el.dataset.item]=el.value;scheduleSave();};el.onchange=()=>render();});
   document.querySelectorAll("[data-up]").forEach(el=>el.onclick=e=>{e.stopPropagation();const inp=document.querySelector(`input[data-fin="${el.dataset.up}"][data-item="${el.dataset.item}"]`);if(inp)inp.click();});
   document.querySelectorAll("[data-fin]").forEach(el=>el.onchange=()=>uploadFile(el.dataset.fin,el.dataset.item,el.files[0]));

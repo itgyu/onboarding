@@ -72,6 +72,13 @@ h1,h2,h3,h4,p{margin:0} button{font-family:inherit;cursor:pointer;letter-spacing
 .flabel{font-weight:800;font-size:16px;margin-bottom:13px;display:flex;gap:8px;align-items:baseline}
 .flabel .req{color:var(--blue);font-size:11.5px;font-weight:800;background:var(--blue-weak);padding:2px 7px;border-radius:6px}
 .hint{color:var(--muted);font-size:12.5px;font-weight:600}
+.guide{background:var(--section);border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin-bottom:15px;font-size:13.5px;line-height:1.62}
+.guide .gw{color:var(--ink);font-weight:600;display:flex;gap:7px}
+.guide .gl{color:var(--sub);margin-top:8px;padding-left:1px}
+.guide .go{color:var(--blue-ink);margin-top:5px}
+.guide .tagx{font-weight:800;margin-right:4px}
+.guide .go .tagx{color:var(--blue)}
+.guide b{font-weight:800}
 .row{display:flex;align-items:center;gap:13px;padding:14px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--card);margin-bottom:9px;cursor:pointer;transition:border-color .15s,background .15s}
 .row:hover{border-color:var(--line-2)}
 .row.on{border-color:var(--blue);background:var(--blue-weak)}
@@ -214,14 +221,34 @@ const STEPS=[
      {id:"push",label:"푸시·문자",kind:"toggle",opt:["사용","미사용"]},
      {id:"couponmall",label:"외부 쿠폰몰",kind:"toggle",opt:["사용","미사용"]},
      {id:"extpoint",label:"외부 포인트·결제",kind:"toggle",opt:["사용","미사용"]} ]} ]},
- {tag:"3단계",title:"멤버십 정책 설계",desc:"6개 영역의 운영 규칙(총 41항목)을 회신하고, 90분 워크숍으로 확정해요.",
+ {tag:"3단계",title:"멤버십 정책 설계",desc:"처음이셔도 괜찮아요. 지금 제공되는 기능과 '보통 브랜드들이 하는 방식'을 함께 안내해 드려요. 골라만 주세요.",
   fields:[
-   {k:"policy",type:"checklist",label:"6개 영역 회신",alabel:"정책 6영역",req:true,items:[
-     {id:"member",label:"회원 · 가입·탈퇴·휴면 (8항목)"},{id:"stamp",label:"스탬프 · 적립·유효기간 (9항목)"},
-     {id:"point",label:"적립금 · 적립률·사용 (10항목)",na:true},{id:"grade",label:"등급 · 등급·혜택 (4항목)"},
-     {id:"coupon",label:"쿠폰·이벤트 (4항목)"},{id:"store",label:"가맹점 · 지점 정책 (6항목)",na:true}]},
-   {k:"excel",type:"checklist",label:"가맹점 목록",alabel:"가맹점 목록",req:false,items:[{id:"xls",label:"가맹점 리스트 엑셀 제출 (가맹점 운영 시)",na:true,file:true}]},
-   {k:"workshop",type:"confirm",label:"90분 정책 설계 워크숍을 진행했습니다.",alabel:"정책 워크숍",req:true} ]},
+   {k:"base_ok",type:"confirm",req:true,alabel:"기본 기능 확인",
+     label:"기본 제공 기능을 확인했어요.",
+     guide:{what:"회원 가입·관리, 매장·메뉴 관리, 고객 이용이력·매출 조회, 결제(KICC) 연동은 <b>추가 개발 없이 기본 제공</b>돼요.",usual:"대부분의 브랜드가 이 기본 구성을 그대로 사용합니다.",ours:"더벤티에서 이미 검증된 구조를 그대로 제공해요."}},
+   {k:"reward",type:"radio",req:true,alabel:"적립 방식",options:["스탬프","포인트(적립금)","둘 다"],
+     label:"적립 방식을 골라주세요",
+     guide:{what:"<b>스탬프</b>는 도장 모으기(예: 10개 → 무료음료). <b>포인트</b>는 결제액의 일정 %를 현금처럼 적립·사용해요.",usual:"카페·외식 프랜차이즈는 정산이 단순한 <b>스탬프</b>를 주로 씁니다. (더벤티도 스탬프)",ours:"둘 다 지원하지만, 매장 간 정산·회계가 단순하도록 <b>하나만</b> 고르시길 권장드려요."}},
+   {k:"stamp_earn",type:"radio",req:true,alabel:"스탬프 적립 기준",options:["1잔(1건)당 1개","결제 금액당","방문당"],
+     label:"스탬프를 어떤 기준으로 적립할까요?",showIf:d=>["스탬프","둘 다"].includes(d.reward),
+     guide:{usual:"음료 브랜드는 '1잔당 도장 1개'가 가장 직관적이에요.",ours:"금액당·방문당 적립도 지원해요."}},
+   {k:"stamp_reward",type:"inputs",req:true,alabel:"스탬프 보상",showIf:d=>["스탬프","둘 다"].includes(d.reward),
+     label:"스탬프 완성 개수와 보상",items:[{id:"count",label:"완성 개수",ph:"예: 10"},{id:"gift",label:"보상",ph:"예: 아메리카노 1잔 무료 쿠폰"}],
+     guide:{usual:"더벤티는 <b>10개를 모으면 무료음료 쿠폰이 자동 발급</b>돼요.",ours:"완성 시 쿠폰 자동 발급까지 구현돼 있어요."}},
+   {k:"stamp_exp",type:"radio",req:true,alabel:"스탬프 유효기간",options:["6개월","12개월","무제한"],showIf:d=>["스탬프","둘 다"].includes(d.reward),
+     label:"스탬프 유효기간",guide:{usual:"보통 12개월을 많이 사용해요."}},
+   {k:"point_rate",type:"inputs",req:true,alabel:"포인트 적립률",showIf:d=>["포인트(적립금)","둘 다"].includes(d.reward),
+     label:"포인트 적립률·사용 기준",items:[{id:"rate",label:"기본 적립률 (%)",ph:"예: 5"},{id:"min",label:"최소 사용 금액",ph:"예: 1,000원부터"}],
+     guide:{usual:"보통 결제액의 1~5%를 적립합니다.",ours:"등급별 차등 적립도 가능해요."}},
+   {k:"coupon_when",type:"multi",req:true,alabel:"쿠폰 발급 계기",options:["가입 축하","생일","스탬프 완성 자동","수시 이벤트"],
+     label:"쿠폰을 언제 발급할까요? (여러 개 선택 가능)",
+     guide:{what:"쿠폰은 본사가 발급해요.",usual:"'가입 축하 + 스탬프 완성 자동 발급' 조합을 가장 많이 씁니다.",ours:"발급 계기·조건을 자유롭게 설정할 수 있어요."}},
+   {k:"coupon_type",type:"multi",req:true,alabel:"쿠폰 종류",options:["정액 할인","정률 할인","무료 증정"],label:"쿠폰 종류 (여러 개 선택 가능)"},
+   {k:"noti",type:"multi",req:true,alabel:"알림 발송 계기",options:["가입 환영","적립 알림","쿠폰 발급","이벤트 공지"],
+     label:"어떤 때 고객에게 알림을 보낼까요? (여러 개 선택 가능)",
+     guide:{what:"카카오 알림톡으로 발송돼요 (2단계에서 채널 결정).",usual:"가입 환영·쿠폰 발급 알림은 기본으로 켜두는 편이에요."}},
+   {k:"stores",type:"checklist",req:false,alabel:"가맹점 목록",items:[{id:"xls",label:"가맹점 리스트 엑셀 제출 (가맹점 운영 시)",na:true,file:true}],
+     label:"가맹점 목록",guide:{what:"여러 매장을 운영하시면 매장 목록(엑셀)을 주세요. 전 매장 공통 적립·사용으로 세팅해 드려요."}} ]},
  {tag:"4단계",title:"자사앱 디자인",desc:"브랜드 자산과 필수 이미지를 전달하고, 화면 시안을 확정해요.",
   fields:[
    {k:"assets",type:"inputs",label:"브랜드 자산",alabel:"브랜드 자산",req:true,items:[
@@ -237,7 +264,9 @@ const STEPS=[
 const esc=s=>(""+s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const shortL=s=>(""+s).replace(/\s*\(.*?\)\s*/g," ").replace(/\s*·.*$/,"").trim()||s;
 function fieldDone(f,data){
+  if(f.showIf && !f.showIf(data))return true;
   const v=data[f.k];
+  if(f.type==="multi")return !f.req||(Array.isArray(v)&&v.length>0);
   if(f.type==="confirm")return v===true;
   if(f.type==="date"||f.type==="text")return !f.req||!!v;
   if(f.type==="radio"){if(!f.req)return true;if(!v)return false;return f.mustBe?v===f.mustBe:true;}
@@ -274,6 +303,7 @@ function toggleItem(k,id){D()[k]=D()[k]||{};D()[k][id]=D()[k][id]==="done"?null:
 function setNa(k,id){D()[k]=D()[k]||{};D()[k][id]=D()[k][id]==="na"?null:"na";scheduleSave();render();}
 function setTerm(k,i,choice){D()[k]=D()[k]||{};D()[k][i]=Object.assign({},D()[k][i],{choice});scheduleSave();render();}
 function setTermNote(k,i,note){D()[k]=D()[k]||{};D()[k][i]=Object.assign({},D()[k][i],{note});scheduleSave();}
+function setMulti(k,val){let a=Array.isArray(D()[k])?D()[k].slice():[];a.includes(val)?a=a.filter(x=>x!==val):a.push(val);D()[k]=a;scheduleSave();render();}
 function setChan(k,id,val,multi){D()[k]=D()[k]||{};
   if(multi){let a=Array.isArray(D()[k][id])?D()[k][id].slice():[];
     if(val==="미사용")a=["미사용"];else{a=a.filter(x=>x!=="미사용");a.includes(val)?a=a.filter(x=>x!==val):a.push(val);}
@@ -339,20 +369,28 @@ function brandView(){
       </div></div>
     <div class="foot">입력하면 자동 저장돼요. 나중에 이 링크로 다시 들어와 이어서 진행할 수 있어요.</div></div>`;
 }
+function guideBox(g){return `<div class="guide">
+  ${g.what?`<div class="gw"><span>💡</span><span>${g.what}</span></div>`:""}
+  ${g.usual?`<div class="gl"><span class="tagx">보통은</span>${g.usual}</div>`:""}
+  ${g.ours?`<div class="go"><span class="tagx">소프트먼트</span>${g.ours}</div>`:""}</div>`;}
 function fieldHtml(f,data){
-  const v=data[f.k];
+  if(f.showIf && !f.showIf(data))return "";
+  const v=data[f.k]; const gb=f.guide?guideBox(f.guide):"";
   if(f.type==="confirm")
-    return `<div class="field"><div class="row ${v===true?"on":""}" data-toggle="${f.k}"><span class="chk">${v===true?"✓":""}</span><span class="txt">${esc(f.label)}</span></div></div>`;
+    return `<div class="field">${gb}<div class="row ${v===true?"on":""}" data-toggle="${f.k}"><span class="chk">${v===true?"✓":""}</span><span class="txt">${esc(f.label)}</span></div></div>`;
   if(f.type==="date"||f.type==="text")
-    return `<div class="field"><div class="flabel">${esc(f.label)}</div><input type="${f.type==="date"?"date":"text"}" class="tinput" data-input="${f.k}" value="${esc(v||"")}"></div>`;
+    return `<div class="field"><div class="flabel">${esc(f.label)}</div>${gb}<input type="${f.type==="date"?"date":"text"}" class="tinput" data-input="${f.k}" value="${esc(v||"")}"></div>`;
   if(f.type==="radio")
-    return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':''}</div>
+    return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':''}</div>${gb}
       <div class="opts">${f.options.map(o=>`<button class="opt ${v===o?(f.mustBe&&o!==f.mustBe?"warn on":"on"):""}" data-radio="${f.k}" data-val="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`;
+  if(f.type==="multi"){const arr=Array.isArray(v)?v:[];
+    return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':''}</div>${gb}
+      <div class="opts">${f.options.map(o=>`<button class="opt ${arr.includes(o)?"on":""}" data-multi2="${f.k}" data-val="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`;}
   if(f.type==="inputs"){
     const rows=f.items.map(it=>{const val=(v||{})[it.id]||"";
       return `<div style="margin-bottom:13px"><div class="hint" style="margin-bottom:6px">${esc(it.label)}${it.opt?"":" · 필수"}</div>
         <input class="tinput" data-tin="${f.k}" data-item="${it.id}" placeholder="${esc(it.ph||"")}" value="${esc(val)}"></div>`;}).join("");
-    return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':''}</div>${rows}</div>`;}
+    return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':''}</div>${gb}${rows}</div>`;}
   if(f.type==="checklist"){
     const rows=f.items.map(it=>{const s=(v||{})[it.id];const na=s==="na";const fileObj=(s&&typeof s==="object"&&s.key)?s:null;const on=s==="done"||!!fileObj;
       if(it.file){const up=S.uploading[f.k+"."+it.id];
@@ -365,7 +403,7 @@ function fieldHtml(f,data){
       return `<div class="row ${on?"on":""} ${na?"na-on":""}" data-cl="${f.k}" data-item="${it.id}">
         <span class="chk">${on?"✓":""}</span><span class="txt">${esc(it.label)}</span>
         ${it.na?`<button class="na" data-na="${f.k}" data-item="${it.id}">${na?"해당없음 ✓":"해당없음"}</button>`:""}</div>`;}).join("");
-    return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':'<span class="hint">선택</span>'}</div>${rows}</div>`;}
+    return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':'<span class="hint">선택</span>'}</div>${gb}${rows}</div>`;}
   if(f.type==="terms"){
     const rows=f.items.map((t,i)=>{const tv=(v||{})[i]||{};
       return `<div class="term"><div class="thead"><span class="tname">${i+1}. ${esc(t)}</span>
@@ -418,8 +456,9 @@ const arow=(k,v)=>`<div class="arow"><div class="ak">${esc(k)}</div><div class="
 const chip=(t,c="")=>`<span class="chip ${c}">${esc(t)}</span>`;
 function answers(st,data){
   let out="";
-  st.fields.forEach(f=>{const v=data[f.k];const lab=f.alabel||shortL(f.label);
-    if(f.type==="confirm")out+=arow(lab,v===true?chip("완료 ✓","ok"):"—");
+  st.fields.forEach(f=>{if(f.showIf&&!f.showIf(data))return;const v=data[f.k];const lab=f.alabel||shortL(f.label);
+    if(f.type==="multi"){const a=Array.isArray(v)?v:[];out+=arow(lab,a.length?a.map(x=>chip(x,"ok")).join(" "):"—");}
+    else if(f.type==="confirm")out+=arow(lab,v===true?chip("완료 ✓","ok"):"—");
     else if(f.type==="date"||f.type==="text")out+=arow(lab,v?esc(v):"—");
     else if(f.type==="radio")out+=arow(lab,v?chip(v,f.mustBe&&v!==f.mustBe?"chg":"ok"):"—");
     else if(f.type==="inputs")f.items.forEach(it=>{const tv=(((v||{})[it.id])||"").trim();out+=arow(it.alabel||shortL(it.label),tv?`<span class="av plain">${esc(tv)}</span>`:"—");});
@@ -448,8 +487,9 @@ function openPdf(b){
   STEPS.forEach((st,si)=>{
     const done=stepDone(si,data);
     body+=`<div class="ps"><div class="ph">${esc(st.tag)} · ${esc(st.title)} <span class="pst ${done?"d":""}">${done?"완료":"미완료"}</span></div><table>`;
-    st.fields.forEach(f=>{const v=data[f.k];const lab=f.alabel||shortL(f.label);const push=(k,val)=>{body+=`<tr><td class="pk">${esc(k)}</td><td>${val}</td></tr>`;};
-      if(f.type==="confirm")push(lab,v===true?"완료":"—");
+    st.fields.forEach(f=>{if(f.showIf&&!f.showIf(data))return;const v=data[f.k];const lab=f.alabel||shortL(f.label);const push=(k,val)=>{body+=`<tr><td class="pk">${esc(k)}</td><td>${val}</td></tr>`;};
+      if(f.type==="multi"){const a=Array.isArray(v)?v:[];push(lab,a.length?esc(a.join(", ")):"—");}
+      else if(f.type==="confirm")push(lab,v===true?"완료":"—");
       else if(f.type==="date"||f.type==="text")push(lab,v?esc(v):"—");
       else if(f.type==="radio")push(lab,v?esc(v):"—");
       else if(f.type==="inputs")f.items.forEach(it=>{const tv=(((v||{})[it.id])||"").trim();push(it.alabel||shortL(it.label),tv?esc(tv):"—");});
@@ -504,6 +544,7 @@ function bind(){
   document.querySelectorAll("[data-term]").forEach(el=>el.onclick=()=>setTerm(el.dataset.term,+el.dataset.i,el.dataset.val));
   document.querySelectorAll("[data-tnote]").forEach(el=>el.oninput=()=>setTermNote(el.dataset.tnote,+el.dataset.i,el.value));
   document.querySelectorAll("[data-chan]").forEach(el=>el.onclick=()=>setChan(el.dataset.chan,el.dataset.item,el.dataset.val,el.dataset.multi==="true"));
+  document.querySelectorAll("[data-multi2]").forEach(el=>el.onclick=()=>setMulti(el.dataset.multi2,el.dataset.val));
   document.querySelectorAll("[data-tin]").forEach(el=>{el.oninput=()=>{const k=el.dataset.tin;D()[k]=D()[k]||{};D()[k][el.dataset.item]=el.value;scheduleSave();};el.onchange=()=>render();});
   document.querySelectorAll("[data-up]").forEach(el=>el.onclick=e=>{e.stopPropagation();const inp=document.querySelector(`input[data-fin="${el.dataset.up}"][data-item="${el.dataset.item}"]`);if(inp)inp.click();});
   document.querySelectorAll("[data-fin]").forEach(el=>el.onchange=()=>uploadFile(el.dataset.fin,el.dataset.item,el.files[0]));

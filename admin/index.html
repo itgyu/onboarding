@@ -165,6 +165,14 @@ input[type=date]:focus,.tinput:focus{outline:none;border-color:var(--blue)}
 .addrow button{border:0;background:var(--blue);color:#fff;border-radius:12px;padding:11px 16px;font-weight:800;font-size:14px}
 .linkbox{margin:12px 4px 0;padding:12px 14px;border:1px solid var(--blue-weak);border-radius:12px;font-size:12.5px;color:var(--sub);background:var(--blue-weak)}
 .linkbox b{color:var(--ink)} .linkbox .u{display:block;margin:6px 0;color:var(--blue-ink);overflow-wrap:anywhere;font-weight:600}
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.tabbtn{border:1.5px solid var(--line-2);background:var(--card);color:var(--sub);border-radius:11px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;transition:all .12s}
+.tabbtn.on{border-color:var(--blue);background:var(--blue-weak);color:var(--blue-ink)}
+.urow{display:flex;align-items:center;gap:10px;padding:13px 16px;border:1.5px solid var(--line);border-radius:14px;margin-bottom:9px;background:var(--card);flex-wrap:wrap}
+.urole{font-size:12px;font-weight:700;border-radius:7px;padding:3px 9px;flex:none}
+.r-super{color:#7c3aed;background:rgba(124,58,237,.10)}
+.r-admin{color:var(--blue-ink);background:var(--blue-weak)}
+.r-member{color:var(--muted);background:var(--section)}
 
 .sheet{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
 .sheethd{padding:22px 24px;border-bottom:1px solid var(--line)}
@@ -214,7 +222,7 @@ const qsp=new URLSearchParams(location.search);
 const BTOK=qsp.get("b");
 const ADMIN_PATH=/\/admin\/?$/.test(location.pathname);
 let AKEY=qsp.get("k")||(ADMIN_PATH?(localStorage.getItem("smt_akey")||""):"");
-let S={mode:BTOK?"brand":(AKEY?"admin":(ADMIN_PATH?"keyin":"landing")),keyerr:null,brand:null,viewStep:undefined,brands:[],adminSel:0,saving:"idle",newLink:null,uploading:{}};
+let S={mode:BTOK?"brand":(AKEY?"admin":(ADMIN_PATH?"keyin":"landing")),keyerr:null,me:null,adminTab:"brands",users:[],authView:"login",meMsg:null,meMsgErr:false,brand:null,viewStep:undefined,brands:[],adminSel:0,saving:"idle",newLink:null,uploading:{}};
 
 const STEPS=[
  {tag:"0단계",title:"NDA 체결",desc:"상세 자료 검토를 시작하기 전, 비밀유지계약(NDA)을 먼저 체결해요. 초안(양방향)은 소프트먼트가 드려요.",
@@ -505,20 +513,44 @@ async function uploadFile(k,itemId,file){
 /* ================= render ================= */
 function render(){
   const app=document.getElementById("app");
-  if(S.mode==="keyin"){app.innerHTML=`<div class="landing"><div class="dot">S</div><h1>관리자 로그인</h1><p>등록된 관리자만 접근할 수 있어요.</p>
+  if(S.mode==="keyin"){
+    const isSign=S.authView==="signup";
+    app.innerHTML=`<div class="landing"><div class="dot">S</div><h1>${isSign?"회원가입":"관리자 로그인"}</h1><p>${isSign?"가입 후 최고 관리자가 권한을 부여하면<br>관리자 페이지를 이용할 수 있어요.":"등록된 관리자만 접근할 수 있어요."}</p>
     <div style="max-width:340px;margin:18px auto 0;text-align:left">
-      <input id="aph" type="tel" class="tinput" placeholder="휴대폰 번호" autocomplete="username">
-      <input id="apw" type="password" class="tinput" placeholder="비밀번호" autocomplete="current-password" style="margin-top:8px">
+      ${isSign?`<input id="sname" class="tinput" placeholder="이름"><input id="sorg" class="tinput" placeholder="소속 (예: 소프트먼트)" style="margin-top:8px">`:""}
+      <input id="aph" type="tel" class="tinput" placeholder="휴대폰 번호" autocomplete="username" style="${isSign?"margin-top:8px":""}">
+      <input id="apw" type="password" class="tinput" placeholder="${isSign?"비밀번호 (8자 이상)":"비밀번호"}" autocomplete="${isSign?"new-password":"current-password"}" style="margin-top:8px">
       ${S.keyerr?`<div style="color:var(--danger);font-size:13px;margin-top:8px">${esc(S.keyerr)}</div>`:""}
-      <button id="akgo" style="width:100%;margin-top:12px;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:13px 0;font-weight:700;font-size:15px;cursor:pointer">로그인</button>
+      <button id="akgo" style="width:100%;margin-top:12px;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:13px 0;font-weight:700;font-size:15px;cursor:pointer">${isSign?"가입하기":"로그인"}</button>
+      <div style="text-align:center;margin-top:14px"><button id="aswap" class="ghost" style="border:none">${isSign?"이미 계정이 있어요 → 로그인":"처음이신가요? → 회원가입"}</button></div>
     </div></div>`;
     const ph=document.getElementById("aph"),pw=document.getElementById("apw"),btn=document.getElementById("akgo");
-    const go=async()=>{const p=ph.value.trim(),w=pw.value;if(!p||!w){S.keyerr="휴대폰 번호와 비밀번호를 입력해 주세요.";render();return;}
+    document.getElementById("aswap").onclick=()=>{S.authView=isSign?"login":"signup";S.keyerr=null;render();};
+    const doLogin=async(p,w)=>{const r=await api("/api/login",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({phone:p,password:w})});
+      AKEY=r.token;localStorage.setItem("smt_akey",r.token);S.keyerr=null;S.mode="loading";render();await loadAdmin();};
+    const go=async()=>{
+      const p=ph.value.trim(),w=pw.value;
+      if(isSign){
+        const nm=document.getElementById("sname").value.trim(),og=document.getElementById("sorg").value.trim();
+        if(!nm||!p){S.keyerr="이름과 휴대폰 번호를 입력해 주세요.";render();return;}
+        if(w.length<8){S.keyerr="비밀번호는 8자 이상으로 해주세요.";render();return;}
+        btn.textContent="가입 중…";btn.disabled=true;
+        try{await api("/api/signup",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({phone:p,password:w,name:nm,org:og})});
+          await doLogin(p,w);}
+        catch(e){S.keyerr=(""+e).includes("409")?"이미 가입된 번호예요. 로그인해 주세요.":"가입에 실패했어요. 입력값을 확인해 주세요.";render();}
+        return;}
+      if(!p||!w){S.keyerr="휴대폰 번호와 비밀번호를 입력해 주세요.";render();return;}
       btn.textContent="확인 중…";btn.disabled=true;
-      try{const r=await api("/api/login",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({phone:p,password:w})});
-        AKEY=r.token;localStorage.setItem("smt_akey",r.token);S.keyerr=null;S.adminName=r.name;S.mode="loading";render();await loadAdmin();}
+      try{await doLogin(p,w);}
       catch(e){S.keyerr="휴대폰 번호 또는 비밀번호가 올바르지 않아요.";render();}};
-    btn.onclick=go;pw.onkeydown=e=>{if(e.key==="Enter")go();};ph.onkeydown=e=>{if(e.key==="Enter")pw.focus();};ph.focus();return;}
+    btn.onclick=go;pw.onkeydown=e=>{if(e.key==="Enter")go();};ph.onkeydown=e=>{if(e.key==="Enter")pw.focus();};
+    (isSign?document.getElementById("sname"):ph).focus();return;}
+  if(S.mode==="pending"){
+    app.innerHTML=`<div class="landing"><div class="dot" style="background:var(--warn)">⏳</div><h1>승인 대기 중이에요</h1><p>가입이 완료됐어요.<br>최고 관리자가 관리자 권한을 부여하면 접속할 수 있어요.</p>
+      <div style="margin-top:18px;display:flex;gap:8px;justify-content:center"><button id="pchk" class="tabbtn on">다시 확인</button><button id="pout" class="tabbtn">로그아웃</button></div></div>`;
+    document.getElementById("pchk").onclick=async()=>{S.mode="loading";render();await loadAdmin();};
+    document.getElementById("pout").onclick=()=>{localStorage.removeItem("smt_akey");AKEY="";S.mode="keyin";S.keyerr=null;render();};
+    return;}
   if(S.mode==="landing"){app.innerHTML=`<div class="landing"><div class="dot">S</div><h1>소프트먼트 온보딩</h1><p>전달받으신 전용 링크로 접속해 주세요.<br>링크가 없다면 담당 매니저에게 문의해 주세요.</p></div>`;return;}
   if(S.mode==="error"){app.innerHTML=`<div class="landing"><div class="dot" style="background:var(--danger)">!</div><h1>접속할 수 없어요</h1><p>${esc(S.errmsg||"링크가 올바른지 확인해 주세요.")}</p></div>`;return;}
   if(S.mode==="loading"){app.innerHTML=`<div class="landing"><p>불러오는 중…</p></div>`;return;}
@@ -527,9 +559,9 @@ function render(){
 }
 function topBar(){
   return `<div class="top"><div class="brandmark"><span class="dot">S</span> 소프트먼트 온보딩</div>
-    ${S.mode==="brand"?`<span style="color:var(--muted);font-weight:700;font-size:14px">· ${esc(S.brand.name)}</span>`:`<span style="color:var(--muted);font-weight:700;font-size:14px">· 관리자</span>`}
+    ${S.mode==="brand"?`<span style="color:var(--muted);font-weight:700;font-size:14px">· ${esc(S.brand.name)}</span>`:`<span style="color:var(--muted);font-weight:700;font-size:14px">· ${S.me?esc(S.me.name)+" · "+(S.me.role==="superadmin"?"최고 관리자":S.me.role==="admin"?"일반 관리자":"관리자"):"관리자"}</span>`}
     <span class="sp"></span><span id="savest" class="savest"></span>
-    ${S.mode==="admin"?`<button class="ghost" id="refresh">↻ 새로고침</button>${ADMIN_PATH?`<button class="ghost" id="akout">로그아웃</button>`:""}`:""}</div>`;
+    ${S.mode==="admin"?`<button class="ghost" id="refresh">↻ 새로고침</button>${(ADMIN_PATH||(AKEY||"").startsWith("sess_"))?`<button class="ghost" id="akout">로그아웃</button>`:""}`:""}</div>`;
 }
 
 /* ---- brand ---- */
@@ -628,7 +660,40 @@ function fieldHtml(f,data){
 }
 
 /* ---- admin ---- */
+function roleLabel(r){return r==="superadmin"?"최고 관리자":r==="admin"?"일반 관리자":"권한 대기";}
+function fmtPhone(p){return p?(""+p).replace(/^(\d{3})(\d{3,4})(\d{4})$/,"$1-$2-$3"):"";}
+function adminTabs(){
+  const role=S.me?S.me.role:"";
+  return `<div class="tabs">
+    <button class="tabbtn ${S.adminTab==="brands"?"on":""}" data-atab="brands">온보딩 현황</button>
+    ${role==="superadmin"?`<button class="tabbtn ${S.adminTab==="users"?"on":""}" data-atab="users">회원 관리</button>`:""}
+    ${S.me&&!S.me.legacy?`<button class="tabbtn ${S.adminTab==="me"?"on":""}" data-atab="me">내 정보</button>`:""}</div>`;
+}
+function usersView(){
+  const rows=(S.users||[]).map(u=>`<div class="urow">
+    <div style="flex:1;min-width:180px"><b>${esc(u.name||"-")}</b> <span style="color:var(--muted);font-size:13px">· ${esc(u.org||"-")} · ${esc(fmtPhone(u.phone))}</span></div>
+    <span class="urole ${u.role==="superadmin"?"r-super":u.role==="admin"?"r-admin":"r-member"}">${roleLabel(u.role)}</span>
+    ${u.role==="member"?`<button class="ghost blue" data-grant="${esc(u.phone)}">관리자 부여</button>`:""}
+    ${u.role==="admin"?`<button class="ghost" data-revoke="${esc(u.phone)}">권한 해제</button>`:""}
+    ${u.role!=="superadmin"?`<button class="ghost" style="color:var(--danger)" data-udel="${esc(u.phone)}">삭제</button>`:""}</div>`).join("");
+  return `<div style="max-width:680px">${rows||'<div style="color:var(--muted)">회원이 없어요.</div>'}
+    <div class="foot2" style="margin-top:14px">회원가입은 관리자 페이지 로그인 화면의 '회원가입'에서 할 수 있어요. '관리자 부여'를 눌러야 관리자 페이지에 접속할 수 있습니다.</div></div>`;
+}
+function meView(){const m=S.me||{};
+  return `<div style="max-width:420px">
+    <div class="field"><div class="flabel">이름</div><input id="me_name" class="tinput" value="${esc(m.name||"")}"></div>
+    <div class="field"><div class="flabel">소속</div><input id="me_org" class="tinput" value="${esc(m.org||"")}"></div>
+    <div class="field"><div class="flabel">휴대폰 번호</div><input class="tinput" value="${esc(fmtPhone(m.phone||""))}" disabled></div>
+    <button id="me_save" class="tabbtn on" style="width:100%">프로필 저장</button>
+    <div class="field" style="margin-top:28px"><div class="flabel">비밀번호 변경</div>
+      <input id="me_cur" type="password" class="tinput" placeholder="현재 비밀번호" autocomplete="current-password">
+      <input id="me_new" type="password" class="tinput" placeholder="새 비밀번호 (8자 이상)" autocomplete="new-password" style="margin-top:8px">
+      <button id="me_pw" class="tabbtn" style="width:100%;margin-top:10px">비밀번호 변경</button></div>
+    ${S.meMsg?`<div style="margin-top:12px;font-size:13.5px;font-weight:600;color:${S.meMsgErr?"var(--danger)":"var(--blue-ink)"}">${esc(S.meMsg)}</div>`:""}</div>`;
+}
 function adminView(){
+  if(S.adminTab==="users")return `<div class="adminmain"><div class="adminhead"><h2>회원 관리</h2></div>${adminTabs()}${usersView()}</div>`;
+  if(S.adminTab==="me")return `<div class="adminmain"><div class="adminhead"><h2>내 정보</h2></div>${adminTabs()}${meView()}</div>`;
   if(S.adminSel>=S.brands.length)S.adminSel=0;
   const list=S.brands.map((b,i)=>{const pct=progressOf(b.data||{});
     return `<div class="bitem ${i===S.adminSel?"on":""}" data-asel="${i}">
@@ -637,7 +702,7 @@ function adminView(){
   const b=S.brands[S.adminSel];
   const linkHtml=S.newLink?`<div class="linkbox">✅ <b>${esc(S.newLink.name)}</b> 링크가 생성됐어요. 브랜드에 전달하세요.<span class="u">${esc(S.newLink.url)}</span><button class="ghost blue" data-copy="${esc(S.newLink.url)}">링크 복사</button></div>`:"";
   return `<div class="adminmain">
-    <div class="adminhead"><h2>브랜드 온보딩 현황</h2></div>
+    <div class="adminhead"><h2>브랜드 온보딩 현황</h2></div>${adminTabs()}
     <div class="agrid">
       <div class="blist"><div class="lt">브랜드 (${S.brands.length})</div>${list||'<div style="padding:14px;color:var(--muted);font-size:13px">브랜드를 추가하세요.</div>'}
         <div class="addrow"><input id="newb" placeholder="새 브랜드명"><button id="addb">추가</button></div>${linkHtml}</div>
@@ -786,6 +851,24 @@ function bind(){
     try{const r=await api("/api/file-url?k="+encodeURIComponent(AKEY)+"&key="+encodeURIComponent(el.dataset.dl));window.open(r.url,"_blank");}
     catch(err){alert("다운로드 링크 생성에 실패했어요.");}});
   const rf=document.getElementById("refresh");if(rf)rf.onclick=loadAdmin;
+  document.querySelectorAll("[data-atab]").forEach(el=>el.onclick=async()=>{S.adminTab=el.dataset.atab;S.meMsg=null;if(S.adminTab==="users")await loadUsers();render();});
+  document.querySelectorAll("[data-grant]").forEach(el=>el.onclick=async()=>{try{await api("/api/users?k="+encodeURIComponent(AKEY),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({phone:el.dataset.grant,role:"admin"})});}catch(e){alert("권한 부여에 실패했어요.");}await loadUsers();render();});
+  document.querySelectorAll("[data-revoke]").forEach(el=>el.onclick=async()=>{try{await api("/api/users?k="+encodeURIComponent(AKEY),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({phone:el.dataset.revoke,role:"member"})});}catch(e){alert("권한 해제에 실패했어요.");}await loadUsers();render();});
+  document.querySelectorAll("[data-udel]").forEach(el=>el.onclick=async()=>{if(!confirm("이 회원을 삭제할까요?"))return;try{await api("/api/users?phone="+encodeURIComponent(el.dataset.udel)+"&k="+encodeURIComponent(AKEY),{method:"DELETE"});}catch(e){alert("삭제에 실패했어요.");}await loadUsers();render();});
+  const ms=document.getElementById("me_save");if(ms)ms.onclick=async()=>{
+    const nm=document.getElementById("me_name").value.trim(),og=document.getElementById("me_org").value.trim();
+    if(!nm){S.meMsg="이름을 입력해 주세요.";S.meMsgErr=true;render();return;}
+    try{await api("/api/me?k="+encodeURIComponent(AKEY),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({name:nm,org:og})});
+      S.me.name=nm;S.me.org=og;S.meMsg="프로필을 저장했어요.";S.meMsgErr=false;}
+    catch(e){S.meMsg="저장에 실패했어요.";S.meMsgErr=true;}
+    render();};
+  const mp=document.getElementById("me_pw");if(mp)mp.onclick=async()=>{
+    const cur=document.getElementById("me_cur").value,nw=document.getElementById("me_new").value;
+    if(nw.length<8){S.meMsg="새 비밀번호는 8자 이상으로 해주세요.";S.meMsgErr=true;render();return;}
+    try{await api("/api/me?k="+encodeURIComponent(AKEY),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({currentPassword:cur,newPassword:nw})});
+      S.meMsg="비밀번호를 변경했어요.";S.meMsgErr=false;}
+    catch(e){S.meMsg="현재 비밀번호가 올바르지 않아요.";S.meMsgErr=true;}
+    render();};
   const ako=document.getElementById("akout");if(ako)ako.onclick=()=>{localStorage.removeItem("smt_akey");AKEY="";S.mode="keyin";S.keyerr=null;render();};
   const ab=document.getElementById("addb");if(ab)ab.onclick=async()=>{const inp=document.getElementById("newb");const name=inp.value.trim();if(!name)return;
     const r=await api("/api/brands?k="+encodeURIComponent(AKEY),{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({name})});
@@ -795,8 +878,16 @@ function bind(){
 }
 
 /* ================= boot ================= */
+async function loadUsers(){
+  try{const r=await api("/api/users?k="+encodeURIComponent(AKEY));S.users=r.users;}catch(e){S.users=[];}
+}
 async function loadAdmin(){
-  try{const r=await api("/api/brands?k="+encodeURIComponent(AKEY));S.brands=r.brands;S.mode="admin";localStorage.setItem("smt_akey",AKEY);}
+  try{
+    const me=await api("/api/me?k="+encodeURIComponent(AKEY));S.me=me;
+    if(me.role!=="superadmin"&&me.role!=="admin"){localStorage.setItem("smt_akey",AKEY);S.mode="pending";render();return;}
+    const r=await api("/api/brands?k="+encodeURIComponent(AKEY));S.brands=r.brands;S.mode="admin";localStorage.setItem("smt_akey",AKEY);
+    if(S.adminTab==="users")await loadUsers();
+  }
   catch(e){
     if(ADMIN_PATH){localStorage.removeItem("smt_akey");AKEY="";S.mode="keyin";S.keyerr="로그인이 만료됐어요. 다시 로그인해 주세요.";}
     else{S.mode="error";S.errmsg="관리자 키가 올바르지 않아요.";}

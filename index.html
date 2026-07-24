@@ -561,7 +561,7 @@ function topBar(){
   return `<div class="top"><div class="brandmark"><span class="dot">S</span> 소프트먼트 온보딩</div>
     ${S.mode==="brand"?`<span style="color:var(--muted);font-weight:700;font-size:14px">· ${esc(S.brand.name)}</span>`:`<span style="color:var(--muted);font-weight:700;font-size:14px">· ${S.me?esc(S.me.name)+" · "+(S.me.role==="superadmin"?"최고 관리자":S.me.role==="admin"?"일반 관리자":"관리자"):"관리자"}</span>`}
     <span class="sp"></span><span id="savest" class="savest"></span>
-    ${S.mode==="admin"?`<button class="ghost" id="refresh">↻ 새로고침</button>${(ADMIN_PATH||(AKEY||"").startsWith("sess_"))?`<button class="ghost" id="akout">로그아웃</button>`:""}`:""}</div>`;
+    ${S.mode==="admin"?`<button class="ghost" id="refresh">↻ 새로고침</button><button class="ghost" id="akout">로그아웃</button>`:""}</div>`;
 }
 
 /* ---- brand ---- */
@@ -689,6 +689,7 @@ function meView(){const m=S.me||{};
       <input id="me_cur" type="password" class="tinput" placeholder="현재 비밀번호" autocomplete="current-password">
       <input id="me_new" type="password" class="tinput" placeholder="새 비밀번호 (8자 이상)" autocomplete="new-password" style="margin-top:8px">
       <button id="me_pw" class="tabbtn" style="width:100%;margin-top:10px">비밀번호 변경</button></div>
+    <button id="me_logout" class="tabbtn" style="width:100%;margin-top:26px;color:var(--danger)">로그아웃</button>
     ${S.meMsg?`<div style="margin-top:12px;font-size:13.5px;font-weight:600;color:${S.meMsgErr?"var(--danger)":"var(--blue-ink)"}">${esc(S.meMsg)}</div>`:""}</div>`;
 }
 function adminView(){
@@ -862,6 +863,7 @@ function bind(){
       S.me.name=nm;S.me.org=og;S.meMsg="프로필을 저장했어요.";S.meMsgErr=false;}
     catch(e){S.meMsg="저장에 실패했어요.";S.meMsgErr=true;}
     render();};
+  const mlo=document.getElementById("me_logout");if(mlo)mlo.onclick=()=>{const a=document.getElementById("akout");if(a)a.click();};
   const mp=document.getElementById("me_pw");if(mp)mp.onclick=async()=>{
     const cur=document.getElementById("me_cur").value,nw=document.getElementById("me_new").value;
     if(nw.length<8){S.meMsg="새 비밀번호는 8자 이상으로 해주세요.";S.meMsgErr=true;render();return;}
@@ -869,7 +871,10 @@ function bind(){
       S.meMsg="비밀번호를 변경했어요.";S.meMsgErr=false;}
     catch(e){S.meMsg="현재 비밀번호가 올바르지 않아요.";S.meMsgErr=true;}
     render();};
-  const ako=document.getElementById("akout");if(ako)ako.onclick=()=>{localStorage.removeItem("smt_akey");AKEY="";S.mode="keyin";S.keyerr=null;render();};
+  const ako=document.getElementById("akout");if(ako)ako.onclick=()=>{
+    localStorage.removeItem("smt_akey");AKEY="";S.me=null;
+    if(qsp.get("k")||!ADMIN_PATH){location.href=location.origin+location.pathname.replace(/(admin\/?)?$/,"")+"admin/";return;}
+    S.mode="keyin";S.keyerr=null;S.authView="login";render();};
   const ab=document.getElementById("addb");if(ab)ab.onclick=async()=>{const inp=document.getElementById("newb");const name=inp.value.trim();if(!name)return;
     const r=await api("/api/brands?k="+encodeURIComponent(AKEY),{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({name})});
     S.newLink={name:r.name,url:location.origin+location.pathname.replace(/admin\/?$/,"")+"?b="+r.token};await loadAdmin();};

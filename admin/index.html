@@ -170,6 +170,10 @@ input[type=date]:focus,.tinput:focus{outline:none;border-color:var(--blue)}
 .tabbtn.on{border-color:var(--blue);background:var(--blue-weak);color:var(--blue-ink)}
 .urow{display:flex;align-items:center;gap:10px;padding:13px 16px;border:1.5px solid var(--line);border-radius:14px;margin-bottom:9px;background:var(--card);flex-wrap:wrap}
 .urole{font-size:12px;font-weight:700;border-radius:7px;padding:3px 9px;flex:none}
+.mv{display:flex;flex-direction:column;gap:2px;flex:none}
+.mv button{border:1px solid var(--line-2);background:var(--card);color:var(--muted);border-radius:6px;font-size:9px;line-height:1;padding:3px 5px;cursor:pointer}
+.mv button:hover:not(:disabled){color:var(--blue);border-color:var(--blue)}
+.mv button:disabled{opacity:.3;cursor:default}
 .r-super{color:#7c3aed;background:rgba(124,58,237,.10)}
 .r-admin{color:var(--blue-ink);background:var(--blue-weak)}
 .r-member{color:var(--muted);background:var(--section)}
@@ -458,7 +462,7 @@ function fieldDone(f,data){
   if(f.type==="confirm")return v===true;
   if(f.type==="date"||f.type==="text"||f.type==="textarea")return !f.req||!!(v&&(""+v).trim());
   if(f.type==="radio"){if(!f.req)return true;if(!v)return false;return f.mustBe?v===f.mustBe:true;}
-  if(f.type==="checklist"){if(!f.req)return true;return f.items.every(it=>{const s=(v||{})[it.id];return s==="done"||(it.na&&s==="na")||(s&&typeof s==="object"&&!!s.key);});}
+  if(f.type==="checklist"){if(!f.req)return true;return f.items.every(it=>{const s=(v||{})[it.id];return s==="done"||(it.na&&s==="na")||(s&&typeof s==="object"&&!!s.key&&!s.redo);});}
   if(f.type==="terms")return f.items.every((t,i)=>(v||{})[i]&&(v||{})[i].choice);
   if(f.type==="channels")return f.items.every(it=>{const cv=(v||{})[it.id];if(it.kind==="multi")return Array.isArray(cv)&&cv.length>0;return !!cv;});
   if(f.type==="inputs"){if(!f.req)return true;if(f.minOne)return f.items.some(it=>(((v||{})[it.id])||"").trim());return f.items.every(it=>it.opt?true:(((v||{})[it.id])||"").trim());}
@@ -624,11 +628,11 @@ function fieldHtml(f,data){
     return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':''}</div>${gb}${rows}</div>`;}
   if(f.type==="checklist"){
     const rows=f.items.map(it=>{const s=(v||{})[it.id];const na=s==="na";const fileObj=(s&&typeof s==="object"&&s.key)?s:null;const on=s==="done"||!!fileObj;
-      if(it.file){const up=S.uploading[f.k+"."+it.id];
-        return `<div class="row ${on?"on":""} ${na?"na-on":""}">
-          <span class="chk">${on?"✓":""}</span>
-          <span class="txt">${esc(it.label)}${fileObj?`<br><span class="hint" style="color:var(--blue-ink)">📎 ${esc(fileObj.name)} · 제출완료</span>`:""}</span>
-          ${up?`<span class="hint">업로드 중…</span>`:na?"":`<button class="filebtn" data-up="${f.k}" data-item="${it.id}">${fileObj?"파일 교체":"📎 파일 첨부"}</button>`}
+      if(it.file){const up=S.uploading[f.k+"."+it.id];const redo=fileObj&&fileObj.redo;const ok=!!fileObj&&!redo;
+        return `<div class="row ${ok?"on":""} ${na?"na-on":""}" ${redo?'style="border-color:var(--warn)"':""}>
+          <span class="chk">${ok?"✓":""}</span>
+          <span class="txt">${esc(it.label)}${fileObj?(redo?`<br><span class="hint" style="color:var(--danger);font-weight:700">⚠ 보완 요청${redo.msg?`: “${esc(redo.msg)}”`:""} — 파일을 다시 올려주세요</span>`:`<br><span class="hint" style="color:var(--blue-ink)">📎 ${esc(fileObj.name)} · 제출완료</span>`):""}</span>
+          ${up?`<span class="hint">업로드 중…</span>`:na?"":`<button class="filebtn" data-up="${f.k}" data-item="${it.id}" ${redo?'style="border-color:var(--warn);color:var(--warn)"':""}>${redo?"📎 파일 다시 첨부":fileObj?"파일 교체":"📎 파일 첨부"}</button>`}
           ${it.na&&!fileObj?`<button class="na" data-na="${f.k}" data-item="${it.id}">${na?"해당없음 ✓":"해당없음"}</button>`:""}
           <input type="file" hidden data-fin="${f.k}" data-item="${it.id}"></div>`;}
       return `<div class="row ${on?"on":""} ${na?"na-on":""}" data-cl="${f.k}" data-item="${it.id}">
@@ -700,7 +704,8 @@ function adminView(){
   const list=S.brands.map((b,i)=>{const pct=progressOf(b.data||{});
     return `<div class="bitem ${i===S.adminSel?"on":""}" data-asel="${i}">
       <div style="flex:1;min-width:0"><div class="bn">${esc(b.name)}</div><div class="mini"><i style="width:${pct}%"></i></div></div>
-      <span class="pct tnum">${pct}%</span></div>`;}).join("");
+      <span class="pct tnum">${pct}%</span>
+      <span class="mv"><button data-mvup="${i}" ${i===0?"disabled":""}>▲</button><button data-mvdn="${i}" ${i===S.brands.length-1?"disabled":""}>▼</button></span></div>`;}).join("");
   const b=S.brands[S.adminSel];
   const linkHtml=S.newLink?`<div class="linkbox">✅ <b>${esc(S.newLink.name)}</b> 링크가 생성됐어요. 브랜드에 전달하세요.<span class="u">${esc(S.newLink.url)}</span><button class="ghost blue" data-copy="${esc(S.newLink.url)}">링크 복사</button></div>`:"";
   return `<div class="adminmain">
@@ -739,7 +744,10 @@ function answers(st,data){
     else if(f.type==="inputs")f.items.forEach(it=>{const tv=(((v||{})[it.id])||"").trim();out+=arow(it.alabel||shortL(it.label),tv?`<span class="av plain">${esc(tv)}</span>`:"—");});
     else if(f.type==="checklist"){
       const parts=f.items.map(it=>{const s=(v||{})[it.id];
-        if(s&&typeof s==="object"&&s.key)return `<span class="chip file">📎 ${esc(shortL(it.label))} · ${esc(s.name)} <a class="dl" href="#" data-dl="${esc(s.key)}">다운로드</a></span>`;
+        if(s&&typeof s==="object"&&s.key){
+          const act=s.redo?`<span class="chip chg">보완 요청 중${s.redo.msg?` · “${esc(s.redo.msg)}”`:""}</span><button class="ghost" data-redocancel="${f.k}|${it.id}">요청 취소</button>`
+                          :`<button class="ghost" data-redo="${f.k}|${it.id}">보완 요청</button>`;
+          return `<span class="chip file">📎 ${esc(shortL(it.label))} · ${esc(s.name)} <a class="dl" href="#" data-dl="${esc(s.key)}">다운로드</a></span> ${act}`;}
         if(s==="done")return chip(shortL(it.label)+" ✓","ok");
         if(s==="na")return chip(shortL(it.label)+" · 해당없음","no");
         return "";}).filter(Boolean);
@@ -771,7 +779,7 @@ function openPdf(b){
       else if(f.type==="radio")push(lab,v?esc(v):"—");
       else if(f.type==="inputs")f.items.forEach(it=>{const tv=(((v||{})[it.id])||"").trim();push(it.alabel||shortL(it.label),tv?esc(tv):"—");});
       else if(f.type==="checklist"){const parts=f.items.map(it=>{const s=(v||{})[it.id];
-        if(s&&typeof s==="object"&&s.key)return "📎 "+esc(shortL(it.label))+" ("+esc(s.name)+")";
+        if(s&&typeof s==="object"&&s.key)return "📎 "+esc(shortL(it.label))+" ("+esc(s.name)+")"+(s.redo?" — 보완 요청 중":"");
         if(s==="done")return esc(shortL(it.label))+" ✓";if(s==="na")return esc(shortL(it.label))+" (해당없음)";return "";}).filter(Boolean);
         push(lab,parts.join("<br>")||"—");}
       else if(f.type==="terms"){const arr=f.items.map((t,i)=>({t,c:(v||{})[i]}));const std=arr.filter(x=>x.c&&x.c.choice==="표준").length;const chg=arr.filter(x=>x.c&&x.c.choice==="변경");
@@ -849,6 +857,29 @@ function bind(){
   document.querySelectorAll("[data-copybrand]").forEach(el=>el.onclick=()=>{const b=S.brands[+el.dataset.copybrand];const url=location.origin+location.pathname.replace(/admin\/?$/,"")+"?b="+b.token;
     navigator.clipboard.writeText(url).then(()=>{el.textContent="복사됨 ✓";setTimeout(()=>el.textContent="🔗 브랜드 링크 복사",1500);});});
   document.querySelectorAll("[data-pdf]").forEach(el=>el.onclick=()=>openPdf(S.brands[+el.dataset.pdf]));
+  document.querySelectorAll("[data-redo]").forEach(el=>el.onclick=async()=>{
+    const [fk,it]=el.dataset.redo.split("|");
+    const msg=prompt("보완 요청 사유를 입력하세요 (브랜드 화면에 그대로 표시돼요)","");
+    if(msg===null)return;
+    const b=S.brands[S.adminSel];
+    b.data[fk][it]=Object.assign({},b.data[fk][it],{redo:{msg:msg.trim(),at:new Date().toISOString()}});
+    try{await api("/api/brand?b="+encodeURIComponent(b.token),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({data:b.data})});}
+    catch(e){alert("저장에 실패했어요.");}
+    render();});
+  document.querySelectorAll("[data-redocancel]").forEach(el=>el.onclick=async()=>{
+    const [fk,it]=el.dataset.redocancel.split("|");
+    const b=S.brands[S.adminSel];
+    const o=Object.assign({},b.data[fk][it]);delete o.redo;b.data[fk][it]=o;
+    try{await api("/api/brand?b="+encodeURIComponent(b.token),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({data:b.data})});}
+    catch(e){alert("저장에 실패했어요.");}
+    render();});
+  const mvBrand=async(i,d)=>{const j=i+d;if(j<0||j>=S.brands.length)return;
+    const t=S.brands[i];S.brands[i]=S.brands[j];S.brands[j]=t;
+    if(S.adminSel===i)S.adminSel=j;else if(S.adminSel===j)S.adminSel=i;
+    render();
+    try{await api("/api/brands?k="+encodeURIComponent(AKEY),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({order:S.brands.map(b=>b.id)})});}catch(e){}};
+  document.querySelectorAll("[data-mvup]").forEach(el=>el.onclick=e=>{e.stopPropagation();mvBrand(+el.dataset.mvup,-1);});
+  document.querySelectorAll("[data-mvdn]").forEach(el=>el.onclick=e=>{e.stopPropagation();mvBrand(+el.dataset.mvdn,1);});
   document.querySelectorAll("[data-dl]").forEach(el=>el.onclick=async e=>{e.preventDefault();
     try{const r=await api("/api/file-url?k="+encodeURIComponent(AKEY)+"&key="+encodeURIComponent(el.dataset.dl));window.open(r.url,"_blank");}
     catch(err){alert("다운로드 링크 생성에 실패했어요.");}});

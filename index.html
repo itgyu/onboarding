@@ -303,21 +303,12 @@ const STEPS=[
    {k:"extpoint",type:"radio",req:true,options:["사용","미사용"],label:"연동 ⑦ 외부 포인트·결제 연동 (OK CASHBAG 등)",alabel:"외부 포인트"},
    {k:"extpoint_info",type:"text",req:true,showIf:d=>d.extpoint==="사용",label:"외부 포인트·결제 연동 내용",alabel:"외부 포인트 정보",ph:"예) OK CASHBAG — 업체·연동 범위"} ]},
 
- {tag:"3단계",title:"멤버십 정책 설계",desc:"처음이셔도 괜찮아요. 소프트먼트 기본(표준) 정책을 먼저 안내해 드려요. 이대로 진행하시면 가장 빠르고, 바꾸고 싶으시면 6개 영역(회원·스탬프·적립금·등급·쿠폰·가맹점) 워크시트에 원하는 부분만 적어주세요. 예상 기간 약 2~3주(워크숍 포함).",
+ {tag:"3단계",title:"멤버십 정책 설계",desc:"처음이셔도 괜찮아요. 항목별로 소프트먼트 기본(표준) 정책을 보여드려요. 각 항목에서 '기본 그대로' 또는 '변경·요청'만 골라주세요 — 변경을 고른 항목만 세부 입력이 열려요. 예상 기간 약 2~3주(워크숍 포함).",
   fields:[
-   {k:"policy_info",type:"info",alabel:"기본 정책 안내",label:"소프트먼트 기본(표준) 멤버십 정책",
-     blocks:[
-       ["회원 가입·운영","만 14세 이상 · 휴대폰 본인인증 기반 간편 가입(간편로그인 병행 가능) · 중복 가입은 본인확인정보(CI) 기준 방지 · 휴면 전환은 법정 12개월 기준"],
-       ["스탬프","1건 결제 = 도장 1개 · 10개 적립 시 무료 상품 쿠폰 자동 발급 · 유효기간 12개월 · 전 매장 공통 적립"],
-       ["적립금(포인트)","기본 미운영 — 스탬프 중심 운영이 기본이에요. 필요 시 결제금액 % 적립 방식으로 전환·병행할 수 있어요"],
-       ["등급","기본 미운영 — 필요 시 3~5단계 등급제(산정 기준·등급별 혜택)를 함께 설계해 드려요"],
-       ["쿠폰","본사 발급 · 가입 축하 + 스탬프 완성 시 자동 발급 · 정액/정률/무료증정 지원"],
-       ["알림","카카오 알림톡으로 가입 환영·적립·쿠폰 발급 알림 발송"],
-       ["매장·정산","전점 공통 적립·사용 · 매장/메뉴 관리 · 이용이력·매출 조회 기본 제공 · 결제는 소프트먼트 PG 연결"]]},
-   {k:"policy_decision",type:"radio",req:true,alabel:"정책 결정",options:["기본 정책 그대로 진행","변경·요청 있음"],
-     label:"위 기본 정책, 이대로 진행할까요?",
-     guide:{what:"기본 정책 그대로면 협의 없이 바로 개발에 착수해 가장 빠르게 오픈할 수 있어요.",usual:"처음 도입하는 브랜드는 대부분 기본 정책으로 시작한 뒤, 운영하며 조정합니다.",ours:"'변경·요청 있음'을 고르시면 아래 6개 영역 워크시트가 열려요 — 바꾸고 싶은 부분만 적어주시면 됩니다."}},
-   {k:"m1",type:"inputs",req:false,showIf:d=>d.policy_decision==="변경·요청 있음",alabel:"회원 정책",label:"워크시트 ① 회원 정의·가입·탈퇴·휴면 (8항목 — 바꿀 부분만)",items:[
+   {k:"p1",type:"radio",req:true,alabel:"회원 정책 결정",label:"정책 ① 회원 가입·운영",options:["기본 그대로","변경·요청"],
+     pol:"만 14세 이상 · 휴대폰 본인인증 기반 간편 가입(간편로그인 병행 가능) · 중복 가입은 본인확인정보(CI) 기준 방지 · 휴면 전환은 법정 12개월 기준",
+     guide:{what:"항목별로 기본 정책을 확인하시고 '기본 그대로' 또는 '변경·요청'을 골라주세요. 변경·요청을 고른 항목만 세부 입력이 열려요.",usual:"처음 도입하는 브랜드는 대부분 기본 정책으로 시작한 뒤, 운영하며 조정합니다.",ours:"기본 그대로면 협의 없이 바로 개발에 착수해 가장 빠르게 오픈할 수 있어요."}},
+   {k:"m1",type:"inputs",req:true,minOne:true,showIf:d=>d.p1==="변경·요청",alabel:"회원 정책",label:"회원 정의·가입·탈퇴·휴면 — 바꿀 부분만 적어주세요 (8항목)",items:[
      {id:"age",label:"가입 대상 연령",ph:"만 14세 이상 / 19세 이상",opt:true},
      {id:"chan",label:"가입 채널",ph:"자사앱 / 매장 QR / 웹 등",opt:true},
      {id:"auth",label:"본인 인증 방식·시점",ph:"PASS+SMS / 가입 시 / 결제 시",opt:true},
@@ -326,7 +317,9 @@ const STEPS=[
      {id:"rejoin",label:"탈퇴 후 재가입 제한",ph:"제한 없음 / 30일 / 90일",opt:true},
      {id:"wddata",label:"탈퇴 시 데이터 처리",ph:"즉시 파기 / 일정 기간 보관",opt:true},
      {id:"dormant",label:"휴면 전환·해제",ph:"법정 12개월(자체 기준 가능) / 해제 방식",opt:true} ]},
-   {k:"m2",type:"inputs",req:false,showIf:d=>d.policy_decision==="변경·요청 있음",alabel:"스탬프 정책",label:"워크시트 ② 스탬프 운영 (9항목 — 바꿀 부분만)",items:[
+   {k:"p2",type:"radio",req:true,alabel:"스탬프 정책 결정",label:"정책 ② 스탬프",options:["기본 그대로","변경·요청"],
+     pol:"1건 결제 = 도장 1개 · 10개 적립 시 무료 상품 쿠폰 자동 발급 · 유효기간 12개월 · 전 매장 공통 적립"},
+   {k:"m2",type:"inputs",req:true,minOne:true,showIf:d=>d.p2==="변경·요청",alabel:"스탬프 정책",label:"스탬프 운영 — 바꿀 부분만 적어주세요 (9항목)",items:[
      {id:"use",label:"스탬프 운영 여부",ph:"운영 / 미운영",opt:true},
      {id:"basis",label:"적립 기준",ph:"건당·금액당·방문당 / 예: 1잔=도장 1개",opt:true},
      {id:"daily",label:"일 적립 상한",ph:"1일 최대 X개",opt:true},
@@ -336,7 +329,9 @@ const STEPS=[
      {id:"cancel",label:"결제 취소 시 처리",ph:"회수 / 유지",opt:true},
      {id:"event",label:"이벤트 스탬프 (2배 적립 등)",ph:"별도 규칙",opt:true},
      {id:"chan",label:"적립 가능 채널",ph:"매장 결제 단말기(POS)·무인주문기·비대면 주문·자사앱",opt:true} ]},
-   {k:"m3",type:"inputs",req:false,showIf:d=>d.policy_decision==="변경·요청 있음",alabel:"적립금 정책",label:"워크시트 ③ 적립금(포인트) 운영 (10항목 — 운영하실 경우만)",items:[
+   {k:"p3",type:"radio",req:true,alabel:"적립금 정책 결정",label:"정책 ③ 적립금(포인트)",options:["기본 그대로","변경·요청"],
+     pol:"기본 미운영 — 스탬프 중심 운영이 기본이에요. 필요 시 결제금액 % 적립 방식으로 전환·병행할 수 있어요"},
+   {k:"m3",type:"inputs",req:true,minOne:true,showIf:d=>d.p3==="변경·요청",alabel:"적립금 정책",label:"적립금(포인트) 운영 — 원하시는 내용을 적어주세요 (10항목)",items:[
      {id:"use",label:"적립금 운영 여부",ph:"운영 / 미운영",opt:true},
      {id:"rate",label:"기본 적립률",ph:"결제금액의 X%",opt:true},
      {id:"graderate",label:"등급별 차등 적립률",ph:"등급별 % 표",opt:true},
@@ -347,29 +342,39 @@ const STEPS=[
      {id:"unit",label:"사용 단위",ph:"1원 / 10원 / 100원",opt:true},
      {id:"transfer",label:"가족·친구 양도",ph:"가능 / 불가",opt:true},
      {id:"expire",label:"소멸 사전 고지",ph:"소멸 30일 전 고지 등",opt:true} ]},
-   {k:"m3r",type:"textarea",req:false,showIf:d=>d.policy_decision==="변경·요청 있음",alabel:"적립금 환불 처리",label:"워크시트 ③-1 환불·취소 시 적립금 처리 (해당 시)",
+   {k:"m3r",type:"textarea",req:false,showIf:d=>d.p3==="변경·요청",alabel:"적립금 환불 처리",label:"적립금 환불·취소 처리 (해당 시)",
      ph:"① 전체 환불 시 사용 적립금 복원 여부 ② 부분 환불 시 차감 규칙 ③ 결제 시 적립된 적립금 회수 방식 ④ 카드 매출 취소와 적립금 차감 선후 관계"},
-   {k:"m3a",type:"textarea",req:false,showIf:d=>d.policy_decision==="변경·요청 있음",alabel:"적립금 회계 처리",label:"워크시트 ③-2 적립금 회계 처리 (해당 시)",
+   {k:"m3a",type:"textarea",req:false,showIf:d=>d.p3==="변경·요청",alabel:"적립금 회계 처리",label:"적립금 회계 처리 (해당 시)",
      ph:"① 적립금 부채 인식 기준 ② 부가세 처리 방식 ③ 정산 시 적립금 포함 여부"},
-   {k:"m4",type:"inputs",req:false,showIf:d=>d.policy_decision==="변경·요청 있음",alabel:"등급 정책",label:"워크시트 ④ 등급 (4항목 — 운영하실 경우만)",items:[
+   {k:"p4",type:"radio",req:true,alabel:"등급 정책 결정",label:"정책 ④ 등급",options:["기본 그대로","변경·요청"],
+     pol:"기본 미운영 — 필요 시 3~5단계 등급제(산정 기준·등급별 혜택)를 함께 설계해 드려요"},
+   {k:"m4",type:"inputs",req:true,minOne:true,showIf:d=>d.p4==="변경·요청",alabel:"등급 정책",label:"등급 — 원하시는 내용을 적어주세요 (4항목)",items:[
      {id:"tiers",label:"등급 수·명칭",ph:"3~5단계 권장 (예: BRONZE→SILVER→GOLD→VIP)",opt:true},
      {id:"basis",label:"등급 산정 기준",ph:"누적 결제액·방문 횟수·기간",opt:true},
      {id:"cycle",label:"등급 평가 주기·유지·강등",ph:"분기·반기·연 / 유지·강등 조건",opt:true},
      {id:"benefit",label:"등급별 혜택 매트릭스",ph:"적립률·쿠폰·생일·우선 예약 등",opt:true} ]},
-   {k:"m5",type:"inputs",req:false,showIf:d=>d.policy_decision==="변경·요청 있음",alabel:"쿠폰 정책",label:"워크시트 ⑤ 쿠폰·이벤트 (4항목 — 바꿀 부분만)",items:[
+   {k:"p5",type:"radio",req:true,alabel:"쿠폰 정책 결정",label:"정책 ⑤ 쿠폰·이벤트",options:["기본 그대로","변경·요청"],
+     pol:"본사 발급 · 가입 축하 + 스탬프 완성 시 자동 발급 · 정액/정률/무료증정 지원"},
+   {k:"m5",type:"inputs",req:true,minOne:true,showIf:d=>d.p5==="변경·요청",alabel:"쿠폰 정책",label:"쿠폰·이벤트 — 바꿀 부분만 적어주세요 (4항목)",items:[
      {id:"kind",label:"쿠폰 종류",ph:"정액·정률·무료증정",opt:true},
      {id:"chan",label:"쿠폰 발급 채널",ph:"가입축하·생일·캠페인 등",opt:true},
      {id:"limit",label:"쿠폰 사용 제한",ph:"최소 결제액·기간·사용 가능 매장",opt:true},
      {id:"freq",label:"이벤트 운영 빈도",ph:"월·분기 단위 권장",opt:true} ]},
-   {k:"m6",type:"inputs",req:false,showIf:d=>d.policy_decision==="변경·요청 있음",alabel:"가맹점 정책",label:"워크시트 ⑥ 가맹점·제공 범위 (6항목 — 가맹점 운영 시)",items:[
+   {k:"p6",type:"radio",req:true,alabel:"알림 정책 결정",label:"정책 ⑥ 알림",options:["기본 그대로","변경·요청"],
+     pol:"카카오 알림톡으로 가입 환영·적립·쿠폰 발급 알림 발송"},
+   {k:"p6_note",type:"textarea",req:true,showIf:d=>d.p6==="변경·요청",alabel:"알림 변경 요청",label:"알림 — 변경·요청 내용을 적어주세요",
+     ph:"예) 쿠폰 소멸 예정 알림도 보내고 싶어요 / 문자(SMS)도 병행하고 싶어요"},
+   {k:"p7",type:"radio",req:true,alabel:"매장·정산 정책 결정",label:"정책 ⑦ 매장·정산·가맹점",options:["기본 그대로","변경·요청"],
+     pol:"전점 공통 적립·사용 · 매장/메뉴 관리 · 이용이력·매출 조회 기본 제공 · 결제는 소프트먼트 PG 연결"},
+   {k:"m6",type:"inputs",req:true,minOne:true,showIf:d=>d.p7==="변경·요청",alabel:"가맹점 정책",label:"매장·정산·가맹점 — 바꿀 부분만 적어주세요 (6항목)",items:[
      {id:"common",label:"전점 공통 정책 여부",ph:"전점 동일 / 지점별 상이",opt:true},
      {id:"earn",label:"적립 가능 지점",ph:"전점 / 일부 지점 리스트",opt:true},
      {id:"use",label:"사용 가능 지점",ph:"전점 / 일부 지점 리스트",opt:true},
      {id:"delivery",label:"배달·포장 적립",ph:"적용 / 미적용",opt:true},
      {id:"newstore",label:"신규 가맹점 편입 프로세스",ph:"승인 흐름·소요 시간",opt:true},
      {id:"close",label:"가맹 해지 시 처리",ph:"기존 고객 적립·사용 안내 방식",opt:true} ]},
-   {k:"policy_note",type:"textarea",req:true,alabel:"변경·요청 사항",showIf:d=>d.policy_decision==="변경·요청 있음",
-     label:"변경·요청 사항 요약 (필수)",ph:"예) 스탬프는 8개로 하고 싶어요 / 등급제를 도입하고 싶어요 / 생일 쿠폰 추가 — 위 워크시트에 적으신 내용의 핵심을 요약해 주세요"},
+   {k:"policy_note",type:"textarea",req:false,alabel:"기타 요청사항",label:"기타 요청사항 (선택)",
+     ph:"위 7개 항목에 없는 요청이나 궁금한 점을 자유롭게 적어주세요"},
    {k:"stores",type:"checklist",req:false,alabel:"가맹점 목록",label:"가맹점 리스트 엑셀 제출 (가맹점 운영 시)",
      guide:{what:"필수 11개 필드: 가맹점 코드 / 가맹점명 / 직영·가맹 구분 / 사업자등록번호 / 대표자명 / 주소 / 대표 연락처 / 운영 시간(요일별) / 적립 대상 여부(Y/N) / 개별 적립률(표준 외 별도 적용 시) / 지역·상권 구분",ours:"엑셀 템플릿은 저희가 드려요. 전 매장 공통 적립·사용이 기본으로 세팅돼요."},
      items:[{id:"xls",label:"가맹점 리스트 엑셀 첨부",na:true,file:true}]},
@@ -445,7 +450,7 @@ function fieldDone(f,data){
   if(f.type==="checklist"){if(!f.req)return true;return f.items.every(it=>{const s=(v||{})[it.id];return s==="done"||(it.na&&s==="na")||(s&&typeof s==="object"&&!!s.key);});}
   if(f.type==="terms")return f.items.every((t,i)=>(v||{})[i]&&(v||{})[i].choice);
   if(f.type==="channels")return f.items.every(it=>{const cv=(v||{})[it.id];if(it.kind==="multi")return Array.isArray(cv)&&cv.length>0;return !!cv;});
-  if(f.type==="inputs"){if(!f.req)return true;return f.items.every(it=>it.opt?true:(((v||{})[it.id])||"").trim());}
+  if(f.type==="inputs"){if(!f.req)return true;if(f.minOne)return f.items.some(it=>(((v||{})[it.id])||"").trim());return f.items.every(it=>it.opt?true:(((v||{})[it.id])||"").trim());}
   return true;
 }
 const stepDone=(si,data)=>STEPS[si].fields.every(f=>fieldDone(f,data));
@@ -558,7 +563,8 @@ function fieldHtml(f,data){
     return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':''}</div>${gb}<input type="${f.type==="date"?"date":"text"}" class="tinput" data-input="${f.k}" placeholder="${esc(f.ph||"")}" value="${esc(v||"")}"></div>`;
   if(f.type==="radio")
     return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':''}</div>${gb}
-      <div class="opts">${f.options.map(o=>`<button class="opt ${v===o?(f.mustBe&&o!==f.mustBe?"warn on":"on"):""}" data-radio="${f.k}" data-val="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`;
+      ${f.pol?`<div class="pol"><div class="pt"><span class="b">기본</span>기본 정책</div><div class="pd">${esc(f.pol)}</div></div>`:""}
+      <div class="opts">${f.options.map(o=>`<button class="opt ${v===o?((f.mustBe&&o!==f.mustBe)||o==="변경·요청"?"warn on":"on"):""}" data-radio="${f.k}" data-val="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`;
   if(f.type==="multi"){const arr=Array.isArray(v)?v:[];
     return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':''}</div>${gb}
       <div class="opts">${f.options.map(o=>`<button class="opt ${arr.includes(o)?"on":""}" data-multi2="${f.k}" data-val="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`;}
@@ -646,7 +652,7 @@ function answers(st,data){
     else if(f.type==="confirm")out+=arow(lab,v===true?chip("완료 ✓","ok"):"—");
     else if(f.type==="textarea")out+=arow(lab,v?`<span class="notequote">“${esc(v)}”</span>`:"—");
     else if(f.type==="date"||f.type==="text")out+=arow(lab,v?esc(v):"—");
-    else if(f.type==="radio")out+=arow(lab,v?chip(v,v==="변경·요청 있음"||(f.mustBe&&v!==f.mustBe)?"chg":"ok"):"—");
+    else if(f.type==="radio")out+=arow(lab,v?chip(v,v==="변경·요청 있음"||v==="변경·요청"||(f.mustBe&&v!==f.mustBe)?"chg":"ok"):"—");
     else if(f.type==="inputs")f.items.forEach(it=>{const tv=(((v||{})[it.id])||"").trim();out+=arow(it.alabel||shortL(it.label),tv?`<span class="av plain">${esc(tv)}</span>`:"—");});
     else if(f.type==="checklist"){
       const parts=f.items.map(it=>{const s=(v||{})[it.id];

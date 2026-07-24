@@ -261,9 +261,9 @@ const STEPS=[
    {k:"mgrs",type:"inputs",label:"담당자 3인 지정",alabel:"담당자",req:true,
      guide:{what:"CPO(개인정보 보호책임자)는 개인정보보호법에 따라 모든 정보처리자가 지정해야 하는 책임자예요. 자사앱에서 회원 정보를 수집·관리하시므로 법적 필수 항목입니다."},
      items:[
-      {id:"bill",label:"청구 담당자 (이름·소속·이메일·연락처)",alabel:"청구 담당자",ph:"홍길동 / 경영지원팀 / bill@brand.co.kr / 010-0000-0000"},
-      {id:"tax",label:"세금계산서 발행 정보 (사업자번호·발행 담당자 이메일)",alabel:"세금계산서 발행",ph:"000-00-00000 / tax@brand.co.kr"},
-      {id:"cpo",label:"개인정보 보호책임자 CPO (성명·직위·연락처·이메일)",alabel:"개인정보 보호책임자(CPO)",ph:"홍길동 / 이사 / 010-0000-0000 / cpo@brand.co.kr"} ]},
+      {id:"bill",label:"메인 담당자 (이름·소속·이메일·연락처)",alabel:"메인 담당자",ph:"홍길동 / 마케팅팀 / main@brand.co.kr / 010-0000-0000"},
+      {id:"tax",label:"정산 담당자 (이름·소속·이메일·연락처 — 세금계산서 발행 이메일 포함)",alabel:"정산 담당자",ph:"홍길동 / 경영지원팀 / tax@brand.co.kr / 010-0000-0000"},
+      {id:"cpo",label:"개인정보 보호 책임자 (성명·직위·연락처·이메일)",alabel:"개인정보 보호 책임자",ph:"홍길동 / 이사 / 010-0000-0000 / cpo@brand.co.kr"} ]},
    {k:"contract",type:"radio",label:"계약 체결(서명)이 완료되었나요?",req:true,options:["완료","진행 중"],mustBe:"완료",block:"계약 체결이 완료되어야 다음 단계로 넘어갈 수 있어요.",alabel:"계약 체결",
      guide:{what:"위 검토 의견 회신과 날인 정보 준비가 끝나면 양사 서명으로 계약을 체결해요. 체결이 완료되어야 다음 단계로 넘어갑니다."}} ]},
 

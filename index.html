@@ -442,6 +442,72 @@ textarea.ta:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var
 .chip.file{background:var(--blue-weak);color:var(--blue-ink)}
 .chip .dl{color:var(--blue);font-weight:800;text-decoration:none;border-bottom:1.5px solid var(--blue);margin-left:4px}
 .notequote{color:var(--sub);font-weight:600;font-size:var(--fs-sm);font-style:italic}
+/* ---- 마스터 WBS (전체 현황) ---- */
+.wtbl tr.wrow.on td{background:var(--blue-weak)}
+.mwsum td{font-size:var(--fs-sm);font-weight:700}
+.mdim{color:var(--faint);font-weight:600}
+.mcur{color:var(--sub);font-weight:700;font-size:var(--fs-xs)}
+.mhead{display:flex;gap:6px;flex-wrap:wrap;margin:22px 0 14px}
+.mchip{border:1px solid var(--line-2);background:var(--card);color:var(--sub);font-weight:700;
+  font-size:var(--fs-sm);padding:8px 14px;border-radius:var(--r-full);cursor:pointer;transition:all .12s}
+.mchip:hover{border-color:var(--blue);color:var(--blue)}
+.mchip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.mopen{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--sunken);
+  border-radius:var(--r-md);padding:14px 18px;margin-bottom:16px}
+.mopen label{font-size:var(--fs-sm);font-weight:800;color:var(--ink)}
+.mopen .tinput{width:170px;margin:0}
+.mopen .mov{font-size:var(--fs-h3);font-weight:900;color:var(--ink);letter-spacing:-.02em}
+.mopen .mh{font-size:var(--fs-xs);color:var(--muted);flex:1;min-width:180px}
+.mnext{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--line);
+  border-left:3px solid var(--blue);border-radius:var(--r-sm);padding:13px 16px;margin-bottom:16px}
+.mnext .nl{font-size:var(--fs-micro);font-weight:800;color:var(--muted)}
+.mnext .nv{font-size:var(--fs-sm);font-weight:800;color:var(--ink);flex:1;min-width:200px}
+.mwtbl{min-width:1080px}
+.mwtbl td{font-size:var(--fs-xs);padding:9px 6px}
+.mwtbl td.mid{color:var(--faint);font-weight:800;font-variant-numeric:tabular-nums}
+.mwtbl .mtn{font-weight:700;color:var(--ink);font-size:var(--fs-sm);line-height:1.45}
+.mwtbl tr.na{opacity:.45}
+.mwtbl tr.lt td{background:var(--danger-weak)}
+.mwtbl tr.lt:hover td{background:var(--danger-weak)}
+.mgate{display:inline-block;margin-left:6px;font-size:var(--fs-micro);font-weight:800;color:var(--blue-ink);
+  background:var(--blue-weak);border-radius:var(--r-xs);padding:2px 6px;vertical-align:1px}
+.mown{display:inline-block;font-size:var(--fs-micro);font-weight:800;padding:3px 8px;border-radius:var(--r-full)}
+.mown.o-s{background:var(--blue-weak);color:var(--blue-ink)}
+.mown.o-b{background:var(--good-weak);color:var(--good)}
+.mown.o-j{background:var(--purple-weak);color:var(--purple)}
+.mdep{color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums}
+.mdt{font-weight:700;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mst{display:inline-block;font-size:var(--fs-micro);font-weight:800;padding:4px 9px;border-radius:var(--r-full);white-space:nowrap}
+.mst.s-done{background:var(--good-weak);color:var(--good)}
+.mst.s-prog{background:var(--blue-weak);color:var(--blue-ink)}
+.mst.s-prep{background:var(--purple-weak);color:var(--purple)}
+.mst.s-hold,.mst.s-undec{background:var(--warn-weak);color:var(--warn)}
+.mst.s-wait{background:var(--sunken);color:var(--muted)}
+.mst.s-na{background:transparent;color:var(--faint)}
+.mlate{display:inline-block;margin-left:5px;font-size:var(--fs-micro);font-weight:800;
+  background:var(--danger-weak);color:var(--danger);padding:4px 7px;border-radius:var(--r-full);white-space:nowrap}
+.msel{font-size:var(--fs-micro);font-weight:700;color:var(--ink);background:var(--card);
+  border:1px solid var(--line-2);border-radius:var(--r-xs);padding:5px 6px;max-width:96px}
+.mnote{width:100%;font-size:var(--fs-micro);color:var(--ink);background:var(--card);
+  border:1px solid var(--line);border-radius:var(--r-xs);padding:6px 8px;font-family:inherit}
+.mnote:focus{outline:none;border-color:var(--blue)}
+.mnt{color:var(--muted);font-size:var(--fs-micro);line-height:1.5}
+.mwtbl td.mstc,.mwtbl td.mntc{white-space:normal}
+.mwtbl tr.mph td{background:var(--section);border-top:1px solid var(--line-2);padding:11px 20px;text-align:left}
+.mpht{font-size:var(--fs-h3);font-weight:900;color:var(--ink);letter-spacing:-.02em;margin-right:10px}
+.mphb{display:inline-block;position:relative;width:72px;height:5px;border-radius:var(--r-full);
+  background:var(--line-2);overflow:hidden;vertical-align:2px}
+.mphb i{position:absolute;left:0;top:0;bottom:0;background:var(--blue);border-radius:var(--r-full)}
+.mphp{font-size:var(--fs-micro);font-weight:800;color:var(--blue-ink);margin-left:6px}
+.mphc{font-size:var(--fs-micro);font-weight:700;color:var(--muted);margin-left:8px}
+.mphs{display:block;font-size:var(--fs-micro);color:var(--muted);margin-top:4px;font-weight:600}
+.mtog{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-xs);font-weight:700;color:var(--sub);cursor:pointer}
+.mnabox{padding:12px 20px;border-top:1px solid var(--line);font-size:var(--fs-micro);color:var(--muted);line-height:1.6}
+.mnabox b{color:var(--sub)}
+@media (max-width:760px){
+  .kgrid{grid-template-columns:repeat(2,1fr)}
+  .mopen .tinput{width:100%}
+}
 .empty{padding:72px 24px;text-align:center;color:var(--muted);font-size:var(--fs-body)}
 .foot2{color:var(--muted);font-size:var(--fs-xs);line-height:1.65;margin-top:16px}
 .dangerzone{display:flex;align-items:center;gap:12px;padding:14px 20px;margin-top:16px;
@@ -479,7 +545,7 @@ const BTOK=qsp.get("b");
 const VIEWID=qsp.get("view");
 const ADMIN_PATH=/\/admin\/?$/.test(location.pathname);
 let AKEY=qsp.get("k")||((ADMIN_PATH||VIEWID)?(localStorage.getItem("smt_akey")||""):"");
-let S={mode:VIEWID?"loading":(BTOK?"brand":(AKEY?"admin":(ADMIN_PATH?"keyin":"landing"))),readonly:!!VIEWID,keyerr:null,me:null,adminTab:"wbs",users:[],authView:"login",meMsg:null,meMsgErr:false,brand:null,viewStep:undefined,openStep:null,brands:[],adminSel:0,saving:"idle",newLink:null,uploading:{}};
+let S={mode:VIEWID?"loading":(BTOK?"brand":(AKEY?"admin":(ADMIN_PATH?"keyin":"landing"))),readonly:!!VIEWID,keyerr:null,me:null,adminTab:"master",mwSel:0,mwNa:false,users:[],authView:"login",meMsg:null,meMsgErr:false,brand:null,viewStep:undefined,openStep:null,brands:[],adminSel:0,saving:"idle",newLink:null,uploading:{}};
 
 const STEPS=[
  {tag:"0단계",short:"NDA",title:"NDA 체결",desc:"상세 자료 검토를 시작하기 전, 비밀유지계약(NDA)을 먼저 체결해요. 초안(양방향)은 소프트먼트가 드려요.",
@@ -523,7 +589,13 @@ const STEPS=[
       {id:"cpo",label:"개인정보 보호 책임자 (성명·직위·연락처·이메일)",alabel:"개인정보 보호 책임자",ph:"홍길동 / 이사 / 010-0000-0000 / cpo@brand.co.kr"} ]},
    {sec:{t:"계약 체결 확인",d:"본사와 체결하는 계약은 멤버십 클라우드 이용계약서와 앱 개발·유지보수 계약서 2종이에요."},k:"contract",type:"radio",label:"본사 계약 2종 체결(서명)이 완료되었나요?",req:true,options:["완료","진행 중"],mustBe:"완료",block:"계약 체결이 완료되어야 다음 단계로 넘어갈 수 있어요.",alabel:"본사 계약 체결",
      guide:{what:"① 멤버십 클라우드 이용계약서 ② 앱 개발·유지보수 계약서 — 두 계약이 모두 서명 완료되면 '완료'를 선택해 주세요.",
-       ours:"결제(PG) 이용 조건과 결제수수료는 멤버십 클라우드 이용계약서에 이미 포함돼 있어, 본사가 별도로 PG 계약서를 체결하지 않아요. 실제 정산을 받는 가맹지점별 결제 계약은 3단계에서 진행합니다."}} ]},
+       ours:"결제(PG) 이용 조건과 결제수수료는 멤버십 클라우드 이용계약서에 이미 포함돼 있어, 본사가 별도로 PG 계약서를 체결하지 않아요. 실제 정산을 받는 가맹지점별 결제 계약은 3단계에서 진행합니다."}},
+   {sec:{t:"추가 예정 계약 — 소프트먼트 준비 중",d:"아래 계약은 소프트먼트에서 표준 양식을 준비하는 중이에요. 지금 브랜드사에서 하실 일은 없고, 확인만 해두시면 됩니다."},
+     k:"future_ctr",type:"info",label:"카카오 알림톡 · SMS 이용계약서 — 소프트먼트 준비 중",alabel:"알림톡·SMS 계약",badge:"준비 중",
+     blocks:[
+      ["카카오 알림톡 이용계약서","가입 환영·적립·쿠폰 발급 알림을 카카오 알림톡으로 보내실 때 필요한 계약이에요. 현재 소프트먼트에서 표준 양식을 준비하고 있고, 확정되면 담당 매니저가 별도로 안내·발송해 드립니다."],
+      ["SMS · MMS 이용계약서","알림톡을 받지 못한 고객에게 문자로 대체 발송하거나, 문자 발송을 함께 쓰실 때 필요한 계약이에요. 마찬가지로 표준 양식 준비 중입니다."],
+      ["지금 일정에 영향이 있나요?","없습니다. 이 계약은 앱 오픈 전까지 체결하면 되고, 지금 단계의 진행을 막지 않아요. 2단계에서 알림톡·문자 사용 여부를 골라주시면, 해당하는 계약만 준비해 발송해 드립니다."]]} ]},
 
  {tag:"2단계",short:"약관·연동",title:"약관 & 외부 연동",desc:"약관·정책 9종을 검토·확정하고, 민감정보 수집 여부와 외부 연동을 결정해요. 표준 양식은 소프트먼트가 드리는 참고용 초안이에요. 예상 기간 약 1~2주.",
   fields:[
@@ -1033,7 +1105,7 @@ function adminNav(){
   const role=S.me?S.me.role:"";
   const t=(k,label)=>`<button class="tabbtn ${S.adminTab===k?"on":""}" data-atab="${k}">${label}</button>`;
   return `<div class="subnav"><div class="inner">
-    ${t("wbs","전체 현황")}${t("brands","브랜드 상세")}
+    ${t("master","전체 현황")}${t("wbs","온보딩 현황")}${t("brands","브랜드 상세")}
     ${role==="superadmin"?t("users","회원 관리"):""}
     ${S.me&&!S.me.legacy?t("me","내 정보"):""}</div></div>`;
 }
@@ -1089,7 +1161,7 @@ function meView(){const m=S.me||{};
 }
 function wbsView(){
   const bs=S.brands||[];
-  if(!bs.length)return `<div>${pageHead("전체 온보딩 현황","브랜드별 단계 진척을 한눈에 확인해요.")}
+  if(!bs.length)return `<div>${pageHead("온보딩 현황","브랜드별 온보딩 0~4단계 진척을 한눈에 확인해요.")}
     <div class="panel"><div class="empty">등록된 브랜드가 없어요.<br><span style="font-size:var(--fs-sm)">[브랜드 상세] 탭에서 브랜드를 추가하세요.</span></div></div></div>`;
   const rowsData=bs.map((b,i)=>{
     const data=b.data||{};
@@ -1148,7 +1220,7 @@ function wbsView(){
       :'<div class="wdone">모든 브랜드가 필수 항목을 완료했어요.</div>'}</div></div>`;
 
   return `<div>
-    ${pageHead("전체 온보딩 현황",`${cnt}개 브랜드의 단계별 진척과 대기 항목을 한눈에 확인해요.`,
+    ${pageHead("온보딩 현황",`${cnt}개 브랜드가 온보딩 페이지에서 입력한 단계별 진척이에요. 계약·개발·오픈까지 포함한 전체 일정은 [전체 현황] 탭에서 볼 수 있어요.`,
       '<button class="ghost blue" id="wbspdf">보고용 PDF 내려받기</button>')}
     ${kpi}
     <div class="panel"><div class="phd"><h3>브랜드별 단계 진척</h3><span style="flex:1"></span>
@@ -1160,7 +1232,341 @@ function wbsView(){
     <div class="foot2">진척률은 각 단계의 <b>필수 항목</b> 완료 개수를 기준으로 계산돼요. 조건부로 숨겨진 항목(해당없음 등)은 집계에서 제외됩니다.</div>
   </div>`;
 }
+/* ================= 마스터 WBS · 전체 현황 ================= */
+/* 브랜드별 전체 프로젝트(계약 → 온보딩 → 부가계약 → 개발 → 결제개통 → 오픈)를
+   오픈 목표일 역산 일정으로 태스크 단위까지 펼쳐 보여줘요.
+   상태는 브랜드가 입력한 온보딩 데이터에서 자동 판정하고,
+   데이터로 알 수 없는 태스크(개발·심사 등)는 최고 관리자가 직접 지정해요. */
+
+const OPS=b=>((b&&b.data&&b.data._ops)||{});
+const opsOpen=b=>OPS(b).open||"";
+const opsSt=(b,id)=>((OPS(b).st||{})[id])||"";
+const opsNote=(b,id)=>((OPS(b).note||{})[id])||"";
+function opsSet(b,kind,id,val){
+  b.data=b.data||{};const o=b.data._ops=b.data._ops||{};
+  if(kind==="open"){if(val)o.open=val;else delete o.open;return;}
+  o[kind]=o[kind]||{};
+  if(val)o[kind][id]=val;else delete o[kind][id];
+}
+function fldOf(k){for(const st of STEPS){const f=st.fields.find(x=>x.k===k);if(f)return f;}return null;}
+function fldTouched(data,k){
+  const v=data[k];
+  if(v===undefined||v===null||v==="")return false;
+  if(Array.isArray(v))return v.length>0;
+  if(typeof v==="object")return Object.keys(v).length>0;
+  return true;
+}
+function fldOk(data,k){
+  const f=fldOf(k);if(!f)return false;
+  if(f.showIf&&!f.showIf(data))return true;   /* 조건상 해당 없음 → 충족으로 봄 */
+  if(!f.req)return fldTouched(data,k);        /* 선택 항목은 값이 있으면 완료 */
+  return fieldDone(f,data);
+}
+const anyTermChange=d=>Object.values(d.terms21||{}).some(t=>t&&t.choice==="변경");
+const anyPolicyChange=d=>["p1","p2","p3","p4","p5","p6","p7"].some(k=>d[k]==="변경·요청");
+const socialOn=d=>Array.isArray(d.social)&&d.social.length>0&&!(d.social.length===1&&d.social[0]==="미사용");
+
+/* when: "y"=해당 · "n"=해당없음 · "?"=아직 결정 전 */
+const WBS=[
+ {ph:"1. 계약 체결",sub:"본사와 체결하는 계약 2종과 필수 서류. 여기가 끝나야 온보딩이 시작돼요.",tasks:[
+  {id:"1.1",n:"NDA(비밀유지계약서) 체결",own:"공동",s:95,e:90,need:["nda_ok"]},
+  {id:"1.2",n:"멤버십 클라우드 이용계약서 초안 제공",own:"소프트먼트",s:92,e:88,fix:"done",note:"표준계약서 완비 · 온보딩 1단계에서 다운로드 제공"},
+  {id:"1.3",n:"자사앱 개발·유지보수 계약서 초안 제공",own:"소프트먼트",s:92,e:88,fix:"done",note:"표준계약서 완비 · 온보딩 1단계에서 다운로드 제공"},
+  {id:"1.4",n:"계약서 법무검토 의견 회신",own:"브랜드",s:88,e:81,dep:"1.2·1.3",need:["contract_review"]},
+  {id:"1.5",n:"법인 인감·대표자 정보 회신 (날인용)",own:"브랜드",s:84,e:81,need:["sealinfo"]},
+  {id:"1.6",n:"구비 서류 제출 (사업자등록증·통신판매업 신고증 등)",own:"브랜드",s:84,e:81,need:["docs"]},
+  {id:"1.7",n:"사업자 정보·담당자 3인 회신",own:"브랜드",s:84,e:81,need:["bizinfo","mgrs"]},
+  {id:"1.8",n:"본사 계약 2종 서명·체결",own:"공동",s:80,e:76,dep:"1.4~1.7",need:["contract"],gate:true,
+    note:"결제(PG) 이용 조건·결제수수료는 멤버십 이용계약서에 포함 — 본사 별도 PG 계약 없음"},
+ ]},
+ {ph:"2. 온보딩 진행",sub:"브랜드가 온보딩 페이지에서 약관·연동·정책·디자인을 확정하는 구간이에요.",tasks:[
+  {id:"2.1",n:"약관·정책 9종 검토 (표준 그대로 / 변경 요청)",own:"브랜드",s:75,e:66,dep:"1.8",need:["terms21"]},
+  {id:"2.2",n:"변경 요청 약관 반영·재발송",own:"소프트먼트",s:66,e:59,dep:"2.1",man:true,
+    when:d=>fldTouched(d,"terms21")?(anyTermChange(d)?"y":"n"):"?"},
+  {id:"2.3",n:"민감정보·고유식별정보 수집 여부 확인",own:"브랜드",s:75,e:70,need:["sensitive","sensitive_items"]},
+  {id:"2.4",n:"외부 연동 채널 결정 (쿠폰몰·PG·본인인증·푸시·간편로그인·외부포인트)",own:"브랜드",s:75,e:66,
+    need:["couponmall","couponmall_info","pg_ok","auth","push","social","extpoint","extpoint_info"]},
+  {id:"2.5",n:"멤버십 정책 7개 항목 확정",own:"브랜드",s:66,e:55,dep:"1.8",
+    need:["p1","m1","p2","m2","p3","m3","m3r","m3a","p4","m4","p5","m5","p6","p6_note","p7","m6"]},
+  {id:"2.6",n:"90분 정책 설계 워크숍",own:"공동",s:55,e:48,dep:"2.5",man:true,
+    when:d=>["p1","p2","p3","p4","p5","p6","p7"].every(k=>d[k])?(anyPolicyChange(d)?"y":"n"):"?"},
+  {id:"2.7",n:"브랜드 자산 제출 (앱 이름·로고·컬러·톤앤매너)",own:"브랜드",s:60,e:52,need:["appname","logo","tone"]},
+  {id:"2.8",n:"앱 이미지 자산 8종 제출",own:"브랜드",s:58,e:50,need:["images"]},
+  {id:"2.9",n:"앱 권한 사용 사전고지문 검토",own:"브랜드",s:52,e:46,need:["perm"]},
+  {id:"2.10",n:"화면 구성 시안 제작·전달 (7화면)",own:"소프트먼트",s:52,e:42,dep:"2.7·2.8",man:true},
+  {id:"2.11",n:"화면 구성 시안 검토·최종 승인",own:"브랜드",s:42,e:35,dep:"2.10",need:["screens","screens_ok"],gate:true,
+    note:"온보딩 마지막 항목 — 승인되면 개발에 착수해요"},
+ ]},
+ {ph:"3. 부가 계약",sub:"2단계 연동 선택에 따라 필요한 계약만 소프트먼트가 준비해 발송해요.",tasks:[
+  {id:"3.1",n:"카카오 알림톡 비즈니스 채널 등록",own:"브랜드",s:70,e:63,need:["alimtalk","alimtalk_info","alimtalk_cap"]},
+  {id:"3.2",n:"카카오 알림톡 이용계약서 준비·체결",own:"소프트먼트",s:66,e:52,dep:"3.1",fix:"prep",
+    note:"소프트먼트 표준 양식 준비 중 — 확정 후 별도 발송"},
+  {id:"3.3",n:"SMS·MMS 이용계약서 준비·체결",own:"소프트먼트",s:66,e:52,fix:"prep",
+    when:d=>d.push?(d.push==="푸시 + 문자(SMS/MMS)"?"y":"n"):"?",
+    note:"소프트먼트 표준 양식 준비 중 — 문자 발송을 쓰는 경우에만 필요"},
+  {id:"3.4",n:"휴대폰 본인인증(다날) 연동 계약·세팅",own:"소프트먼트",s:63,e:49,man:true,
+    when:d=>d.auth?(d.auth==="사용"?"y":"n"):"?"},
+  {id:"3.5",n:"외부 쿠폰몰 연동 협의·계약",own:"공동",s:63,e:49,man:true,
+    when:d=>d.couponmall?(d.couponmall==="사용"?"y":"n"):"?"},
+  {id:"3.6",n:"외부 포인트·결제 연동 협의 (OK CASHBAG 등)",own:"공동",s:63,e:49,man:true,
+    when:d=>d.extpoint?(d.extpoint==="사용"?"y":"n"):"?"},
+  {id:"3.7",n:"간편로그인 채널 개발자 계정 준비·심사",own:"브랜드",s:56,e:45,man:true,
+    when:d=>fldTouched(d,"social")?(socialOn(d)?"y":"n"):"?"},
+ ]},
+ {ph:"4. 개발 · 구축",sub:"시안 승인 이후 소프트먼트가 진행하는 구간이에요. 상태는 최고 관리자가 직접 업데이트해요.",tasks:[
+  {id:"4.1",n:"앱 개발 착수 (설계·개발 환경 구성)",own:"소프트먼트",s:48,e:42,dep:"2.11",man:true},
+  {id:"4.2",n:"멤버십 정책 시스템 세팅 (스탬프·쿠폰·등급·정산)",own:"소프트먼트",s:45,e:24,dep:"2.5",man:true},
+  {id:"4.3",n:"알림톡 템플릿 등록·심사",own:"소프트먼트",s:40,e:26,dep:"3.1",man:true},
+  {id:"4.4",n:"통합 테스트 (QA)",own:"공동",s:24,e:12,dep:"4.1·4.2",man:true},
+  {id:"4.5",n:"앱 스토어 등록·심사 (App Store · Google Play)",own:"소프트먼트",s:14,e:4,dep:"4.4",man:true,
+    note:"스토어 심사 반려 가능성을 감안해 여유를 두고 제출해요"},
+ ]},
+ {ph:"5. 가맹점 · 결제 개통",sub:"실제 정산 대상인 각 가맹지점과 전자결제 계약을 체결해요. 지점 수만큼 시간이 곱해져요.",tasks:[
+  {id:"5.1",n:"가맹점 명단 제출 (멤버십 필수 11개 필드)",own:"브랜드",s:28,e:24,need:["stores"]},
+  {id:"5.2",n:"지점 대표자 연락처·이메일 확보 · 사전 공지",own:"브랜드",s:24,e:21,dep:"5.1",
+    chk:d=>{const a=d.pg_branch_notice,l=fldTouched(d,"pg_branch_list");
+      return (a==="공지 완료"&&l)?"done":((a||l)?"prog":"wait");}},
+  {id:"5.3",n:"지점별 전자결제서비스 계약 발송",own:"소프트먼트",s:21,e:12,dep:"5.2",
+    chk:d=>{const v=d.pg_branch_status;
+      return v==="전 지점 회수 완료"?"done":(v==="일부 지점 진행 중"?"prog":"wait");}},
+  {id:"5.4",n:"지점 계약 서명 회수",own:"공동",s:21,e:7,dep:"5.3",
+    chk:d=>{const v=d.pg_branch_status;
+      return v==="전 지점 회수 완료"?"done":(v?"prog":"wait");}},
+  {id:"5.5",n:"지점 사업자등록증·통장 사본 취합",own:"브랜드",s:21,e:10,dep:"5.2",
+    chk:d=>fldTouched(d,"pg_branch_docs")?(fldOk(d,"pg_branch_docs")?"done":"prog"):(d.pg_branch_note?"prog":"wait")},
+  {id:"5.6",n:"결제 가맹점 등록·개통 (지점당 영업일 2~3일)",own:"소프트먼트",s:10,e:3,dep:"5.4·5.5",man:true},
+ ]},
+ {ph:"6. 오픈",sub:"",tasks:[
+  {id:"6.1",n:"매장 교육 · 운영 매뉴얼 배포",own:"브랜드",s:10,e:2,man:true},
+  {id:"6.2",n:"정식 오픈",own:"공동",s:0,e:0,dep:"4.5·5.6",man:true,gate:true},
+ ]},
+];
+
+const ST_LABEL={done:"완료",prog:"진행 중",wait:"대기",prep:"준비 중",hold:"보류",na:"해당없음",undec:"조건 미확정"};
+const ST_ORDER=["done","prog","prep","hold","undec","wait","na"];
+
+function taskStat(t,b){
+  const d=b.data||{};
+  const w=t.when?t.when(d):"y";
+  if(w==="n")return "na";
+  if(w==="?")return "undec";
+  if(t.man)return opsSt(b,t.id)||"wait";
+  if(t.fix)return opsSt(b,t.id)||t.fix;
+  if(t.chk)return t.chk(d);
+  const ks=t.need||[];
+  if(!ks.length)return "wait";
+  if(ks.every(k=>fldOk(d,k)))return "done";
+  return ks.some(k=>fldTouched(d,k))?"prog":"wait";
+}
+function planOf(openISO,t){
+  if(!openISO)return null;
+  const o=new Date(openISO+"T00:00:00");
+  if(isNaN(o))return null;
+  const a=new Date(o),z=new Date(o);
+  a.setDate(o.getDate()-t.s);z.setDate(o.getDate()-t.e);
+  return {a,z,days:t.s-t.e+1};
+}
+const md=d=>`${d.getMonth()+1}.${String(d.getDate()).padStart(2,"0")}`;
+const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const today0=()=>{const t=new Date();t.setHours(0,0,0,0);return t;};
+function dMinus(openISO){
+  if(!openISO)return null;
+  const o=new Date(openISO+"T00:00:00");if(isNaN(o))return null;
+  return Math.round((o-today0())/86400000);
+}
+function brandWbs(b){
+  const open=opsOpen(b);
+  const phases=WBS.map(p=>{
+    const tasks=p.tasks.map(t=>{
+      const s=taskStat(t,b),pl=planOf(open,t);
+      const late=!!(pl&&s!=="done"&&s!=="na"&&pl.z<today0());
+      return {t,s,pl,late};
+    });
+    const live=tasks.filter(x=>x.s!=="na");
+    const done=live.filter(x=>x.s==="done").length;
+    return {p,tasks,live:live.length,done,pct:live.length?Math.round(done/live.length*100):100,
+      late:tasks.filter(x=>x.late).length};
+  });
+  const all=phases.reduce((a,x)=>a+x.live,0),dn=phases.reduce((a,x)=>a+x.done,0);
+  const late=phases.reduce((a,x)=>a+x.late,0);
+  const undec=phases.reduce((a,x)=>a+x.tasks.filter(y=>y.s==="undec").length,0);
+  const next=phases.flatMap(x=>x.tasks).find(x=>x.s!=="done"&&x.s!=="na");
+  const curPh=phases.find(x=>x.pct<100);
+  return {open,phases,all,done:dn,pct:all?Math.round(dn/all*100):0,late,undec,next,
+    curPh:curPh?curPh.p.ph:"전 태스크 완료",dm:dMinus(open)};
+}
+
+function stBadge(s,late){
+  return `<span class="mst s-${s}">${ST_LABEL[s]}</span>${late?'<span class="mlate">지연</span>':""}`;
+}
+function masterView(){
+  const bs=S.brands||[];
+  if(!bs.length)return `<div>${pageHead("전체 현황","브랜드별 전체 프로젝트 일정과 태스크를 한눈에 확인해요.")}
+    <div class="panel"><div class="empty">등록된 브랜드가 없어요.<br><span style="font-size:var(--fs-sm)">[브랜드 상세] 탭에서 브랜드를 추가하세요.</span></div></div></div>`;
+  if(S.mwSel>=bs.length)S.mwSel=0;
+  const sums=bs.map((b,i)=>({b,i,w:brandWbs(b)}));
+
+  /* ---- 전 브랜드 요약 ---- */
+  const srows=sums.map(x=>{
+    const w=x.w;
+    const dm=w.dm===null?'<span class="mdim">미설정</span>'
+      :(w.dm>0?`<b>D-${w.dm}</b>`:(w.dm===0?'<b style="color:var(--danger)">오픈일</b>':`<span style="color:var(--muted)">오픈 +${-w.dm}일</span>`));
+    return `<tr class="wrow ${x.i===S.mwSel?"on":""}" data-mwsel="${x.i}">
+      <td class="l"><span class="wbn">${esc(x.b.name)}</span></td>
+      <td>${w.open?esc(w.open):'<span class="mdim">—</span>'}</td>
+      <td>${dm}</td>
+      <td><span class="wbar ${w.pct===100?"f":""}"><i style="width:${w.pct}%"></i></span><span class="wpct">${w.pct}%</span></td>
+      <td>${w.done} / ${w.all}</td>
+      <td>${w.late?`<span class="mlate">${w.late}건</span>`:'<span class="mdim">없음</span>'}</td>
+      <td>${w.undec?`<span class="mst s-undec">${w.undec}건</span>`:'<span class="mdim">없음</span>'}</td>
+      <td class="l"><span class="mcur">${esc(w.curPh)}</span></td></tr>`;}).join("");
+  const summary=`<div class="panel"><div class="phd"><h3>브랜드별 요약</h3><span style="flex:1"></span>
+      <span class="psub2">행을 클릭하면 아래에 해당 브랜드의 WBS가 열려요</span></div>
+    <div class="pbd flush"><div class="wscroll"><table class="wtbl mwsum">
+      <thead><tr><th class="l" style="width:140px">브랜드</th><th style="width:110px">오픈 목표일</th>
+        <th style="width:90px">남은 기간</th><th style="width:150px">전체 진척</th><th style="width:90px">태스크</th>
+        <th style="width:80px">지연</th><th style="width:96px">미확정</th><th class="l">현재 구간</th></tr></thead>
+      <tbody>${srows}</tbody></table></div></div></div>`;
+
+  /* ---- 선택 브랜드 상세 WBS ---- */
+  const sel=sums[S.mwSel],b=sel.b,w=sel.w,ed=canEdit();
+  const chips=sums.map(x=>`<button class="mchip ${x.i===S.mwSel?"on":""}" data-mwsel="${x.i}">${esc(x.b.name)}</button>`).join("");
+
+  const openBox=ed
+    ? `<div class="mopen"><label for="mw_open">오픈 목표일</label>
+        <input type="date" id="mw_open" class="tinput" value="${esc(w.open)}">
+        <span class="mh">${w.open?"이 날짜를 기준으로 모든 태스크 일정을 역산해요.":"목표일을 넣으면 태스크별 계획 일정이 계산돼요."}</span></div>`
+    : `<div class="mopen"><label>오픈 목표일</label>
+        <span class="mov">${w.open?esc(w.open):"미설정"}</span>
+        <span class="mh">오픈 목표일은 최고 관리자가 설정해요.</span></div>`;
+
+  const dmTxt=w.dm===null?"–":(w.dm>0?`D-${w.dm}`:(w.dm===0?"오픈일":`+${-w.dm}일`));
+  const nextTxt=w.next?`${w.next.t.id} ${w.next.t.n}`:"모든 태스크 완료";
+  const kpi=`<div class="kgrid">
+    <div class="kcard"><div class="kl">오픈까지</div><div class="kv ${w.dm!==null&&w.dm<=14?"w":"b"}">${dmTxt}</div>
+      <div class="ks">${w.open?esc(w.open)+" 기준":"오픈 목표일 미설정"}</div></div>
+    <div class="kcard"><div class="kl">전체 진척</div><div class="kv b">${w.pct}<span>%</span></div>
+      <div class="ks">태스크 ${w.done} / ${w.all}건 완료</div></div>
+    <div class="kcard"><div class="kl">지연 태스크</div><div class="kv ${w.late?"w":""}">${w.late}<span>건</span></div>
+      <div class="ks">계획 완료일이 지난 미완료 태스크</div></div>
+    <div class="kcard"><div class="kl">결정 대기</div><div class="kv ${w.undec?"w":""}">${w.undec}<span>건</span></div>
+      <div class="ks">브랜드 선택에 따라 확정되는 태스크</div></div></div>`;
+
+  const naHidden=[];
+  const phaseHtml=w.phases.map(ph=>{
+    const rows=ph.tasks.filter(x=>{
+      if(x.s==="na"&&!S.mwNa){naHidden.push(x.t.id+" "+x.t.n);return false;}
+      return true;}).map(x=>{
+      const t=x.t,pl=x.pl;
+      const dates=pl?`<span class="mdt">${md(pl.a)} → ${md(pl.z)}</span>`:'<span class="mdim">—</span>';
+      const own=`<span class="mown o-${t.own==="소프트먼트"?"s":t.own==="브랜드"?"b":"j"}">${t.own}</span>`;
+      const stCell=(ed&&(t.man||t.fix))
+        ? `<select class="msel" data-mwst="${t.id}">
+             ${["","wait","prog","done","hold"].map(v=>`<option value="${v}" ${opsSt(b,t.id)===v?"selected":""}>${v?ST_LABEL[v]:(t.fix?ST_LABEL[t.fix]+" (기본)":"대기 (기본)")}</option>`).join("")}
+           </select>${x.late?'<span class="mlate">지연</span>':""}`
+        : stBadge(x.s,x.late);
+      const note=(ed&&(t.man||t.fix))
+        ? `<input class="mnote" data-mwnote="${t.id}" placeholder="${esc(t.note||"비고 입력")}" value="${esc(opsNote(b,t.id))}">`
+        : `<span class="mnt">${esc(opsNote(b,t.id)||t.note||"")}</span>`;
+      return `<tr class="${x.s==="na"?"na":""}${x.late?" lt":""}">
+        <td class="mid">${esc(t.id)}</td>
+        <td class="l"><span class="mtn">${esc(t.n)}</span>${t.gate?'<span class="mgate">게이트</span>':""}</td>
+        <td>${own}</td>
+        <td><span class="mdep">${esc(t.dep||"—")}</span></td>
+        <td>${dates}</td>
+        <td>${pl?pl.days+"일":'<span class="mdim">—</span>'}</td>
+        <td class="mstc">${stCell}</td>
+        <td class="l mntc">${note}</td></tr>`;}).join("");
+    return `<tr class="mph"><td colspan="8"><span class="mpht">${esc(ph.p.ph)}</span>
+        <span class="mphb"><i style="width:${ph.pct}%"></i></span><span class="mphp">${ph.pct}%</span>
+        <span class="mphc">${ph.done}/${ph.live}건</span>
+        ${ph.late?`<span class="mlate">지연 ${ph.late}건</span>`:""}
+        ${ph.p.sub?`<span class="mphs">${esc(ph.p.sub)}</span>`:""}</td></tr>${rows}`;
+  }).join("");
+
+  const tbl=`<div class="panel"><div class="phd"><h3>${esc(b.name)} · 전체 WBS</h3><span style="flex:1"></span>
+      <label class="mtog"><input type="checkbox" id="mw_na" ${S.mwNa?"checked":""}> 해당없음 항목 표시</label>
+      <span class="psub2">태스크 ${w.all}건</span></div>
+    <div class="pbd flush"><div class="wscroll"><table class="wtbl mwtbl">
+      <thead><tr><th style="width:50px">WBS</th><th class="l">태스크</th><th style="width:88px">담당</th>
+        <th style="width:78px">선행</th><th style="width:104px">계획 일정</th><th style="width:56px">기간</th>
+        <th style="width:132px">상태</th><th class="l" style="width:220px">비고</th></tr></thead>
+      <tbody>${phaseHtml}</tbody></table></div>
+      ${naHidden.length?`<div class="mnabox"><b>해당없음 ${naHidden.length}건</b> (연동 미사용으로 제외) — ${esc(naHidden.join(" · "))}</div>`:""}
+      <div class="wlegend">
+        <div><span class="d" style="background:var(--good)"></span>완료</div>
+        <div><span class="d" style="background:var(--blue)"></span>진행 중</div>
+        <div><span class="d" style="background:var(--purple)"></span>준비 중(소프트먼트)</div>
+        <div><span class="d" style="background:var(--warn)"></span>조건 미확정 · 보류</div>
+        <div><span class="d" style="background:var(--line-2)"></span>대기</div>
+        <span style="flex:1"></span>
+        <div>계획 일정은 오픈 목표일 역산 기준이에요</div></div></div></div>`;
+
+  return `<div>
+    ${pageHead("전체 현황",`계약부터 오픈까지 브랜드별 전체 일정을 태스크 단위로 관리해요. 온보딩 입력값은 자동 반영됩니다.`,
+      `<button class="ghost blue" id="mwpdf">보고용 PDF 내려받기</button>`)}
+    ${summary}
+    <div class="mhead">${chips}</div>
+    ${openBox}
+    ${kpi}
+    <div class="mnext"><span class="nl">다음 해야 할 일</span><span class="nv">${esc(nextTxt)}</span>
+      ${w.next?`<span class="mown o-${w.next.t.own==="소프트먼트"?"s":w.next.t.own==="브랜드"?"b":"j"}">${w.next.t.own}</span>`:""}</div>
+    ${tbl}
+    <div class="foot2">상태 자동 판정 기준 — <b>완료</b>는 해당 태스크에 걸린 온보딩 항목이 모두 충족된 경우, <b>진행 중</b>은 일부만 입력된 경우예요.
+      개발·심사·결제 개통처럼 온보딩 데이터로 알 수 없는 태스크는 최고 관리자가 상태를 직접 지정합니다.
+      <b>조건 미확정</b>은 브랜드가 아직 연동 사용 여부를 선택하지 않아 필요 여부가 정해지지 않은 태스크예요.</div>
+  </div>`;
+}
+
+async function saveOps(b){
+  if(!b.token){alert("이 계정은 열람 전용이에요.");return;}
+  try{await api("/api/brand?b="+encodeURIComponent(b.token),
+    {method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({data:b.data})});}
+  catch(e){alert("저장에 실패했어요.");}
+}
+function openMasterPdf(){
+  const bs=S.brands||[];if(!bs.length)return;
+  const secs=bs.map(b=>{
+    const w=brandWbs(b);
+    const dm=w.dm===null?"미설정":(w.dm>0?"D-"+w.dm:(w.dm===0?"오픈일":"오픈 +"+(-w.dm)+"일"));
+    const rows=w.phases.map(ph=>{
+      const tr=ph.tasks.filter(x=>x.s!=="na").map(x=>{
+        const pl=x.pl;
+        return `<tr><td>${esc(x.t.id)}</td><td class="l">${esc(x.t.n)}</td><td>${esc(x.t.own)}</td>
+          <td>${pl?ymd(pl.a)+" ~ "+ymd(pl.z):"—"}</td><td>${ST_LABEL[x.s]}${x.late?" (지연)":""}</td>
+          <td class="l">${esc(opsNote(b,x.t.id)||x.t.note||"")}</td></tr>`;}).join("");
+      return `<tr class="ph"><td colspan="6">${esc(ph.p.ph)} — ${ph.done}/${ph.live}건 완료 (${ph.pct}%)</td></tr>${tr}`;
+    }).join("");
+    return `<section><h2>${esc(b.name)}</h2>
+      <p class="meta">오픈 목표일 <b>${w.open||"미설정"}</b> · ${dm} · 전체 진척 <b>${w.pct}%</b> (${w.done}/${w.all}건)
+        · 지연 ${w.late}건 · 결정 대기 ${w.undec}건 · 현재 구간 <b>${esc(w.curPh)}</b></p>
+      <table><thead><tr><th>WBS</th><th class="l">태스크</th><th>담당</th><th>계획 일정</th><th>상태</th><th class="l">비고</th></tr></thead>
+        <tbody>${rows}</tbody></table></section>`;}).join("");
+  const html=`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>멤버십 전체 현황 (WBS)</title>
+    <style>
+      *{box-sizing:border-box}
+      body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+        color:#191F28;margin:0;padding:28px 30px}
+      h1{font-size:21px;margin:0 0 4px} .sub{color:#8B95A1;font-size:12px;margin-bottom:22px}
+      section{margin-bottom:26px;page-break-inside:avoid}
+      h2{font-size:15px;margin:0 0 4px;padding-bottom:6px;border-bottom:2px solid #191F28}
+      .meta{font-size:11.5px;color:#4E5968;margin:6px 0 9px}
+      table{width:100%;border-collapse:collapse;font-size:10.5px}
+      th{background:#F2F4F6;color:#4E5968;font-size:9.5px;padding:6px 5px;border:1px solid #DCE0E6;text-align:center}
+      td{padding:5px;border:1px solid #EAEDF1;text-align:center;vertical-align:top}
+      .l{text-align:left} tr.ph td{background:#EDF4FE;font-weight:800;text-align:left;font-size:11px}
+      @page{size:A4 landscape;margin:12mm}
+    </style></head><body>
+    <h1>멤버십 온보딩 · 전체 현황 (WBS)</h1>
+    <div class="sub">소프트먼트 · 출력일 ${ymd(new Date())} · 브랜드 ${bs.length}개 · 계획 일정은 오픈 목표일 역산 기준</div>
+    ${secs}
+    ${"<scr"+"ipt>window.onload=()=>setTimeout(()=>window.print(),350)</scr"+"ipt>"}</body></html>`;
+  const wd=window.open("","_blank");
+  if(!wd){alert("팝업이 차단됐어요. 팝업 허용 후 다시 시도해 주세요.");return;}
+  wd.document.write(html);wd.document.close();
+}
 function adminView(){
+  if(S.adminTab==="master")return `<div class="adminmain">${masterView()}</div>`;
   if(S.adminTab==="wbs")return `<div class="adminmain">${wbsView()}</div>`;
   if(S.adminTab==="users")return `<div class="adminmain">${usersView()}</div>`;
   if(S.adminTab==="me")return `<div class="adminmain">${meView()}</div>`;
@@ -1404,6 +1810,19 @@ function bind(){
   const rf=document.getElementById("refresh");if(rf)rf.onclick=loadAdmin;
   document.querySelectorAll("[data-atab]").forEach(el=>el.onclick=async()=>{S.adminTab=el.dataset.atab;S.meMsg=null;if(S.adminTab==="users")await loadUsers();render();});
   document.querySelectorAll("[data-wsel]").forEach(el=>el.onclick=()=>{S.adminSel=+el.dataset.wsel;S.adminTab="brands";S.newLink=null;S.openStep=null;render();window.scrollTo({top:0,behavior:"smooth"});});
+  document.querySelectorAll("[data-mwsel]").forEach(el=>el.onclick=()=>{S.mwSel=+el.dataset.mwsel;render();});
+  const mo=document.getElementById("mw_open");
+  if(mo)mo.onchange=async()=>{const b=S.brands[S.mwSel];opsSet(b,"open",null,mo.value);render();await saveOps(b);};
+  const mna=document.getElementById("mw_na");
+  if(mna)mna.onchange=()=>{S.mwNa=mna.checked;render();};
+  document.querySelectorAll("[data-mwst]").forEach(el=>el.onchange=async()=>{
+    const b=S.brands[S.mwSel];opsSet(b,"st",el.dataset.mwst,el.value);render();await saveOps(b);});
+  document.querySelectorAll("[data-mwnote]").forEach(el=>{
+    el.onblur=async()=>{const b=S.brands[S.mwSel];
+      if(opsNote(b,el.dataset.mwnote)===el.value.trim())return;
+      opsSet(b,"note",el.dataset.mwnote,el.value.trim());await saveOps(b);};
+    el.onkeydown=e=>{if(e.key==="Enter")el.blur();};});
+  const mpdf=document.getElementById("mwpdf");if(mpdf)mpdf.onclick=()=>openMasterPdf();
   const wp=document.getElementById("wbspdf");if(wp)wp.onclick=()=>openWbsPdf();
   document.querySelectorAll("[data-grant]").forEach(el=>el.onclick=async()=>{try{await api("/api/users?k="+encodeURIComponent(AKEY),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({phone:el.dataset.grant,role:"admin"})});}catch(e){alert("권한 부여에 실패했어요.");}await loadUsers();render();});
   document.querySelectorAll("[data-revoke]").forEach(el=>el.onclick=async()=>{try{await api("/api/users?k="+encodeURIComponent(AKEY),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({phone:el.dataset.revoke,role:"member"})});}catch(e){alert("권한 해제에 실패했어요.");}await loadUsers();render();});

@@ -370,6 +370,7 @@ textarea.ta:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var
 .wtbl td{padding:11px 6px;border-bottom:1px solid var(--line);vertical-align:middle;text-align:center}
 .wtbl td:first-child{text-align:left;padding-left:20px}
 .wtbl th.l,.wtbl td.l{text-align:left}
+.mwtbl th:first-child,.mwtbl td:first-child{padding-right:14px}
 .wtbl td:last-child{padding-right:20px}
 .wtbl tr:last-child td{border-bottom:0}
 .wtbl tr.wrow{cursor:pointer;transition:background .12s}
@@ -493,12 +494,12 @@ textarea.ta:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var
   border:1px solid var(--line);border-radius:var(--r-xs);padding:6px 8px;font-family:inherit}
 .mnote:focus{outline:none;border-color:var(--blue)}
 .mnt{color:var(--muted);font-size:var(--fs-micro);line-height:1.5}
-.mdue{width:112px;font-size:var(--fs-micro);font-weight:800;color:var(--ink);background:var(--card);
+.mdue{width:104px;font-size:var(--fs-micro);font-weight:800;color:var(--ink);background:var(--card);
   border:1px solid var(--line-2);border-radius:var(--r-xs);padding:5px 6px;font-family:inherit}
 .mdue:focus{outline:none;border-color:var(--blue)}
 .mdue.auto{color:var(--muted);font-weight:700;border-style:dashed}
 .mdt.fx{color:var(--ink);font-weight:800}
-.mdauto{display:block;font-size:9.5px;color:var(--faint);font-weight:700;margin-top:2px}
+.mdauto{display:inline-block;font-size:9.5px;color:var(--faint);font-weight:700;margin-left:5px;white-space:nowrap}
 .mwtbl td.mstc,.mwtbl td.mntc{white-space:normal}
 .mwtbl tr.mph td{background:var(--section);border-top:1px solid var(--line-2);padding:11px 20px;text-align:left}
 .mpht{font-size:var(--fs-h3);font-weight:900;color:var(--ink);letter-spacing:-.02em;margin-right:10px}
@@ -1277,14 +1278,14 @@ const socialOn=d=>Array.isArray(d.social)&&d.social.length>0&&!(d.social.length=
 const WBS=[
  {ph:"1. 계약 체결",sub:"본사와 체결하는 계약 2종과 필수 서류. 여기가 끝나야 온보딩이 시작돼요.",tasks:[
   {id:"1.1",n:"NDA(비밀유지계약서) 체결",own:"공동",s:95,e:90,need:["nda_ok"]},
-  {id:"1.2",n:"멤버십 클라우드 이용계약서 초안 제공",own:"소프트먼트",s:92,e:88,fix:"done",note:"표준계약서 완비 · 온보딩 1단계에서 다운로드 제공"},
-  {id:"1.3",n:"자사앱 개발·유지보수 계약서 초안 제공",own:"소프트먼트",s:92,e:88,fix:"done",note:"표준계약서 완비 · 온보딩 1단계에서 다운로드 제공"},
+  {id:"1.2",n:"멤버십 클라우드 이용계약서 초안 제공",own:"소프트먼트",s:92,e:88,fix:"done",note:"표준계약서 완비 · 1단계 다운로드 제공"},
+  {id:"1.3",n:"자사앱 개발·유지보수 계약서 초안 제공",own:"소프트먼트",s:92,e:88,fix:"done",note:"표준계약서 완비 · 1단계 다운로드 제공"},
   {id:"1.4",n:"계약서 법무검토 의견 회신",own:"브랜드",s:88,e:81,dep:"1.2·1.3",need:["contract_review"]},
   {id:"1.5",n:"법인 인감·대표자 정보 회신 (날인용)",own:"브랜드",s:84,e:81,need:["sealinfo"]},
   {id:"1.6",n:"구비 서류 제출 (사업자등록증·통신판매업 신고증 등)",own:"브랜드",s:84,e:81,need:["docs"]},
   {id:"1.7",n:"사업자 정보·담당자 3인 회신",own:"브랜드",s:84,e:81,need:["bizinfo","mgrs"]},
   {id:"1.8",n:"본사 계약 2종 서명·체결",own:"공동",s:80,e:76,dep:"1.4~1.7",need:["contract"],gate:true,
-    note:"결제(PG) 이용 조건·결제수수료는 멤버십 이용계약서에 포함 — 본사 별도 PG 계약 없음"},
+    note:"결제수수료 조항 포함 — 본사 별도 PG 계약 없음"},
  ]},
  {ph:"2. 온보딩 진행",sub:"브랜드가 온보딩 페이지에서 약관·연동·정책·디자인을 확정하는 구간이에요.",tasks:[
   {id:"2.1",n:"약관·정책 9종 검토 (표준 그대로 / 변경 요청)",own:"브랜드",s:75,e:66,dep:"1.8",need:["terms21"]},
@@ -1302,15 +1303,15 @@ const WBS=[
   {id:"2.9",n:"앱 권한 사용 사전고지문 검토",own:"브랜드",s:52,e:46,need:["perm"]},
   {id:"2.10",n:"화면 구성 시안 제작·전달 (7화면)",own:"소프트먼트",s:52,e:42,dep:"2.7·2.8",man:true},
   {id:"2.11",n:"화면 구성 시안 검토·최종 승인",own:"브랜드",s:42,e:35,dep:"2.10",need:["screens","screens_ok"],gate:true,
-    note:"온보딩 마지막 항목 — 승인되면 개발에 착수해요"},
+    note:"승인되면 개발 착수"},
  ]},
  {ph:"3. 부가 계약",sub:"2단계 연동 선택에 따라 필요한 계약만 소프트먼트가 준비해 발송해요.",tasks:[
   {id:"3.1",n:"카카오 알림톡 비즈니스 채널 등록",own:"브랜드",s:70,e:63,need:["alimtalk","alimtalk_info","alimtalk_cap"]},
   {id:"3.2",n:"카카오 알림톡 이용계약서 준비·체결",own:"소프트먼트",s:66,e:52,dep:"3.1",fix:"prep",
-    note:"소프트먼트 표준 양식 준비 중 — 확정 후 별도 발송"},
+    note:"표준 양식 준비 중 — 확정 후 발송"},
   {id:"3.3",n:"SMS·MMS 이용계약서 준비·체결",own:"소프트먼트",s:66,e:52,fix:"prep",
     when:d=>d.push?(d.push==="푸시 + 문자(SMS/MMS)"?"y":"n"):"?",
-    note:"소프트먼트 표준 양식 준비 중 — 문자 발송을 쓰는 경우에만 필요"},
+    note:"표준 양식 준비 중 — 문자 사용 시에만"},
   {id:"3.4",n:"휴대폰 본인인증(다날) 연동 계약·세팅",own:"소프트먼트",s:63,e:49,man:true,
     when:d=>d.auth?(d.auth==="사용"?"y":"n"):"?"},
   {id:"3.5",n:"외부 쿠폰몰 연동 협의·계약",own:"공동",s:63,e:49,man:true,
@@ -1326,7 +1327,7 @@ const WBS=[
   {id:"4.3",n:"알림톡 템플릿 등록·심사",own:"소프트먼트",s:40,e:26,dep:"3.1",man:true},
   {id:"4.4",n:"통합 테스트 (QA)",own:"공동",s:24,e:12,dep:"4.1·4.2",man:true},
   {id:"4.5",n:"앱 스토어 등록·심사 (App Store · Google Play)",own:"소프트먼트",s:14,e:4,dep:"4.4",man:true,
-    note:"스토어 심사 반려 가능성을 감안해 여유를 두고 제출해요"},
+    note:"심사 반려 대비 여유 확보 필요"},
  ]},
  {ph:"5. 가맹점 · 결제 개통",sub:"실제 정산 대상인 각 가맹지점과 전자결제 계약을 체결해요. 지점 수만큼 시간이 곱해져요.",tasks:[
   {id:"5.1",n:"가맹점 명단 제출 (멤버십 필수 11개 필드)",own:"브랜드",s:28,e:24,need:["stores"]},
@@ -1509,7 +1510,7 @@ function masterView(){
       <label class="mtog"><input type="checkbox" id="mw_na" ${S.mwNa?"checked":""}> 해당없음 항목 표시</label>
       <span class="psub2">태스크 ${w.all}건</span></div>
     <div class="pbd flush"><div class="wscroll"><table class="wtbl mwtbl">
-      <thead><tr><th style="width:48px">WBS</th><th class="l">태스크</th><th style="width:82px">담당</th>
+      <thead><tr><th style="width:62px">WBS</th><th class="l">태스크</th><th style="width:82px">담당</th>
         <th style="width:70px">선행</th><th style="width:70px">착수</th><th style="width:126px">듀데이트</th>
         <th style="width:124px">상태</th><th class="l" style="width:190px">비고</th></tr></thead>
       <tbody>${phaseHtml}</tbody></table></div>

@@ -1435,7 +1435,7 @@ function masterView(){
   const openBox=ed
     ? `<div class="mopen"><label for="mw_open">오픈 목표일</label>
         <input type="date" id="mw_open" class="tinput" value="${esc(w.open)}">
-        <span class="mh">${w.open?"이 날짜를 기준으로 모든 태스크 일정을 역산해요.":"목표일을 넣으면 태스크별 계획 일정이 계산돼요."}</span></div>`
+        <span class="mh">${w.open?`이 날짜를 기준으로 모든 태스크 일정을 역산해요. 표준 리드타임은 계약 착수부터 오픈까지 <b>약 95일</b>이에요.`:"목표일을 넣으면 태스크별 계획 일정이 계산돼요. 표준 리드타임은 계약 착수부터 오픈까지 <b>약 95일</b>입니다."}</span></div>`
     : `<div class="mopen"><label>오픈 목표일</label>
         <span class="mov">${w.open?esc(w.open):"미설정"}</span>
         <span class="mh">오픈 목표일은 최고 관리자가 설정해요.</span></div>`;
@@ -1514,7 +1514,8 @@ function masterView(){
     ${tbl}
     <div class="foot2">상태 자동 판정 기준 — <b>완료</b>는 해당 태스크에 걸린 온보딩 항목이 모두 충족된 경우, <b>진행 중</b>은 일부만 입력된 경우예요.
       개발·심사·결제 개통처럼 온보딩 데이터로 알 수 없는 태스크는 최고 관리자가 상태를 직접 지정합니다.
-      <b>조건 미확정</b>은 브랜드가 아직 연동 사용 여부를 선택하지 않아 필요 여부가 정해지지 않은 태스크예요.</div>
+      <b>조건 미확정</b>은 브랜드가 아직 연동 사용 여부를 선택하지 않아 필요 여부가 정해지지 않은 태스크예요.<br>
+      계획 일정은 오픈 목표일에서 역산해요. 전체 표준 리드타임이 약 95일이라, 목표일이 이보다 가까우면 앞 구간 태스크가 <b>지연</b>으로 표시돼요 — 일정을 압축하거나 목표일을 조정해야 한다는 신호입니다.</div>
   </div>`;
 }
 

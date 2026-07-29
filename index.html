@@ -369,6 +369,7 @@ textarea.ta:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var
 .wtbl th:last-child{padding-right:20px}
 .wtbl td{padding:11px 6px;border-bottom:1px solid var(--line);vertical-align:middle;text-align:center}
 .wtbl td:first-child{text-align:left;padding-left:20px}
+.wtbl th.l,.wtbl td.l{text-align:left}
 .wtbl td:last-child{padding-right:20px}
 .wtbl tr:last-child td{border-bottom:0}
 .wtbl tr.wrow{cursor:pointer;transition:background .12s}
@@ -492,6 +493,12 @@ textarea.ta:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var
   border:1px solid var(--line);border-radius:var(--r-xs);padding:6px 8px;font-family:inherit}
 .mnote:focus{outline:none;border-color:var(--blue)}
 .mnt{color:var(--muted);font-size:var(--fs-micro);line-height:1.5}
+.mdue{width:112px;font-size:var(--fs-micro);font-weight:800;color:var(--ink);background:var(--card);
+  border:1px solid var(--line-2);border-radius:var(--r-xs);padding:5px 6px;font-family:inherit}
+.mdue:focus{outline:none;border-color:var(--blue)}
+.mdue.auto{color:var(--muted);font-weight:700;border-style:dashed}
+.mdt.fx{color:var(--ink);font-weight:800}
+.mdauto{display:block;font-size:9.5px;color:var(--faint);font-weight:700;margin-top:2px}
 .mwtbl td.mstc,.mwtbl td.mntc{white-space:normal}
 .mwtbl tr.mph td{background:var(--section);border-top:1px solid var(--line-2);padding:11px 20px;text-align:left}
 .mpht{font-size:var(--fs-h3);font-weight:900;color:var(--ink);letter-spacing:-.02em;margin-right:10px}
@@ -1358,6 +1365,11 @@ function taskStat(t,b){
   if(ks.every(k=>fldOk(d,k)))return "done";
   return ks.some(k=>fldTouched(d,k))?"prog":"wait";
 }
+function effDue(b,t,pl){
+  const f=(OPS(b).due||{})[t.id];
+  if(f){const d=new Date(f+"T00:00:00");if(!isNaN(d))return {d,fixed:true};}
+  return {d:pl?pl.z:null,fixed:false};
+}
 function planOf(openISO,t){
   if(!openISO)return null;
   const o=new Date(openISO+"T00:00:00");
@@ -1379,8 +1391,9 @@ function brandWbs(b){
   const phases=WBS.map(p=>{
     const tasks=p.tasks.map(t=>{
       const s=taskStat(t,b),pl=planOf(open,t);
-      const late=!!(pl&&s!=="done"&&s!=="na"&&pl.z<today0());
-      return {t,s,pl,late};
+      const du=effDue(b,t,pl);
+      const late=!!(du.d&&s!=="done"&&s!=="na"&&du.d<today0());
+      return {t,s,pl,du,late};
     });
     const live=tasks.filter(x=>x.s!=="na");
     const done=live.filter(x=>x.s==="done").length;
@@ -1442,6 +1455,7 @@ function masterView(){
 
   const dmTxt=w.dm===null?"–":(w.dm>0?`D-${w.dm}`:(w.dm===0?"오픈일":`+${-w.dm}일`));
   const nextTxt=w.next?`${w.next.t.id} ${w.next.t.n}`:"모든 태스크 완료";
+  const nextDue=(w.next&&w.next.du&&w.next.du.d)?`듀데이트 ${ymd(w.next.du.d)}${w.next.du.fixed?"":" (자동)"}`:"";
   const kpi=`<div class="kgrid">
     <div class="kcard"><div class="kl">오픈까지</div><div class="kv ${w.dm!==null&&w.dm<=14?"w":"b"}">${dmTxt}</div>
       <div class="ks">${w.open?esc(w.open)+" 기준":"오픈 목표일 미설정"}</div></div>
@@ -1458,7 +1472,14 @@ function masterView(){
       if(x.s==="na"&&!S.mwNa){naHidden.push(x.t.id+" "+x.t.n);return false;}
       return true;}).map(x=>{
       const t=x.t,pl=x.pl;
-      const dates=pl?`<span class="mdt">${md(pl.a)} → ${md(pl.z)}</span>`:'<span class="mdim">—</span>';
+      const du=x.du;
+      const startCell=pl?`<span class="mdt">${md(pl.a)}</span>`:'<span class="mdim">—</span>';
+      const dueCell=ed
+        ? `<input type="date" class="mdue ${du.fixed?"":"auto"}" data-mwdue="${t.id}" value="${du.d?ymd(du.d):""}"
+             title="${du.fixed?"직접 확정한 듀데이트예요. 비우면 자동 역산값으로 돌아갑니다.":"오픈 목표일에서 자동 역산된 초안 날짜예요. 고치면 확정 듀데이트가 됩니다."}">
+           ${du.fixed?"":'<span class="mdauto">자동 역산</span>'}`
+        : (du.d?`<span class="mdt ${du.fixed?"fx":""}">${ymd(du.d)}</span>${du.fixed?"":'<span class="mdauto">자동 역산</span>'}`
+             :'<span class="mdim">—</span>');
       const own=`<span class="mown o-${t.own==="소프트먼트"?"s":t.own==="브랜드"?"b":"j"}">${t.own}</span>`;
       const stCell=(ed&&(t.man||t.fix))
         ? `<select class="msel" data-mwst="${t.id}">
@@ -1473,8 +1494,8 @@ function masterView(){
         <td class="l"><span class="mtn">${esc(t.n)}</span>${t.gate?'<span class="mgate">게이트</span>':""}</td>
         <td>${own}</td>
         <td><span class="mdep">${esc(t.dep||"—")}</span></td>
-        <td>${dates}</td>
-        <td>${pl?pl.days+"일":'<span class="mdim">—</span>'}</td>
+        <td>${startCell}</td>
+        <td class="mduec">${dueCell}</td>
         <td class="mstc">${stCell}</td>
         <td class="l mntc">${note}</td></tr>`;}).join("");
     return `<tr class="mph"><td colspan="8"><span class="mpht">${esc(ph.p.ph)}</span>
@@ -1488,9 +1509,9 @@ function masterView(){
       <label class="mtog"><input type="checkbox" id="mw_na" ${S.mwNa?"checked":""}> 해당없음 항목 표시</label>
       <span class="psub2">태스크 ${w.all}건</span></div>
     <div class="pbd flush"><div class="wscroll"><table class="wtbl mwtbl">
-      <thead><tr><th style="width:50px">WBS</th><th class="l">태스크</th><th style="width:88px">담당</th>
-        <th style="width:78px">선행</th><th style="width:104px">계획 일정</th><th style="width:56px">기간</th>
-        <th style="width:132px">상태</th><th class="l" style="width:220px">비고</th></tr></thead>
+      <thead><tr><th style="width:48px">WBS</th><th class="l">태스크</th><th style="width:82px">담당</th>
+        <th style="width:70px">선행</th><th style="width:70px">착수</th><th style="width:126px">듀데이트</th>
+        <th style="width:124px">상태</th><th class="l" style="width:190px">비고</th></tr></thead>
       <tbody>${phaseHtml}</tbody></table></div>
       ${naHidden.length?`<div class="mnabox"><b>해당없음 ${naHidden.length}건</b> (연동 미사용으로 제외) — ${esc(naHidden.join(" · "))}</div>`:""}
       <div class="wlegend">
@@ -1500,7 +1521,7 @@ function masterView(){
         <div><span class="d" style="background:var(--warn)"></span>조건 미확정 · 보류</div>
         <div><span class="d" style="background:var(--line-2)"></span>대기</div>
         <span style="flex:1"></span>
-        <div>계획 일정은 오픈 목표일 역산 기준이에요</div></div></div></div>`;
+        <div>듀데이트는 오픈 목표일에서 자동 역산되고, 직접 고쳐서 확정할 수 있어요</div></div></div></div>`;
 
   return `<div>
     ${pageHead("전체 현황",`계약부터 오픈까지 브랜드별 전체 일정을 태스크 단위로 관리해요. 온보딩 입력값은 자동 반영됩니다.`,
@@ -1510,12 +1531,14 @@ function masterView(){
     ${openBox}
     ${kpi}
     <div class="mnext"><span class="nl">다음 해야 할 일</span><span class="nv">${esc(nextTxt)}</span>
+      ${nextDue?`<span class="mdt fx">${esc(nextDue)}</span>`:""}
       ${w.next?`<span class="mown o-${w.next.t.own==="소프트먼트"?"s":w.next.t.own==="브랜드"?"b":"j"}">${w.next.t.own}</span>`:""}</div>
     ${tbl}
     <div class="foot2">상태 자동 판정 기준 — <b>완료</b>는 해당 태스크에 걸린 온보딩 항목이 모두 충족된 경우, <b>진행 중</b>은 일부만 입력된 경우예요.
       개발·심사·결제 개통처럼 온보딩 데이터로 알 수 없는 태스크는 최고 관리자가 상태를 직접 지정합니다.
       <b>조건 미확정</b>은 브랜드가 아직 연동 사용 여부를 선택하지 않아 필요 여부가 정해지지 않은 태스크예요.<br>
-      계획 일정은 오픈 목표일에서 역산해요. 전체 표준 리드타임이 약 95일이라, 목표일이 이보다 가까우면 앞 구간 태스크가 <b>지연</b>으로 표시돼요 — 일정을 압축하거나 목표일을 조정해야 한다는 신호입니다.</div>
+      <b>듀데이트</b>는 오픈 목표일에서 자동 역산한 초안이 먼저 깔리고(점선·회색), 최고 관리자가 직접 고치면 확정값이 돼요(실선·검정). 비우면 다시 자동 역산으로 돌아갑니다. 지연 판정도 확정 듀데이트를 기준으로 합니다.<br>
+      전체 표준 리드타임은 계약 착수부터 오픈까지 약 95일이에요. 오픈 목표일이 이보다 가까우면 앞 구간 태스크가 <b>지연</b>으로 표시되는데, 일정을 압축하거나 목표일을 조정해야 한다는 신호입니다.</div>
   </div>`;
 }
 
@@ -1534,14 +1557,15 @@ function openMasterPdf(){
       const tr=ph.tasks.filter(x=>x.s!=="na").map(x=>{
         const pl=x.pl;
         return `<tr><td>${esc(x.t.id)}</td><td class="l">${esc(x.t.n)}</td><td>${esc(x.t.own)}</td>
-          <td>${pl?ymd(pl.a)+" ~ "+ymd(pl.z):"—"}</td><td>${ST_LABEL[x.s]}${x.late?" (지연)":""}</td>
+          <td>${pl?ymd(pl.a):"—"}</td><td>${x.du.d?ymd(x.du.d)+(x.du.fixed?"":" (자동)"):"—"}</td>
+          <td>${ST_LABEL[x.s]}${x.late?" (지연)":""}</td>
           <td class="l">${esc(opsNote(b,x.t.id)||x.t.note||"")}</td></tr>`;}).join("");
-      return `<tr class="ph"><td colspan="6">${esc(ph.p.ph)} — ${ph.done}/${ph.live}건 완료 (${ph.pct}%)</td></tr>${tr}`;
+      return `<tr class="ph"><td colspan="7">${esc(ph.p.ph)} — ${ph.done}/${ph.live}건 완료 (${ph.pct}%)</td></tr>${tr}`;
     }).join("");
     return `<section><h2>${esc(b.name)}</h2>
       <p class="meta">오픈 목표일 <b>${w.open||"미설정"}</b> · ${dm} · 전체 진척 <b>${w.pct}%</b> (${w.done}/${w.all}건)
         · 지연 ${w.late}건 · 결정 대기 ${w.undec}건 · 현재 구간 <b>${esc(w.curPh)}</b></p>
-      <table><thead><tr><th>WBS</th><th class="l">태스크</th><th>담당</th><th>계획 일정</th><th>상태</th><th class="l">비고</th></tr></thead>
+      <table><thead><tr><th>WBS</th><th class="l">태스크</th><th>담당</th><th>착수</th><th>듀데이트</th><th>상태</th><th class="l">비고</th></tr></thead>
         <tbody>${rows}</tbody></table></section>`;}).join("");
   const html=`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>멤버십 전체 현황 (WBS)</title>
     <style>
@@ -1823,6 +1847,11 @@ function bind(){
       if(opsNote(b,el.dataset.mwnote)===el.value.trim())return;
       opsSet(b,"note",el.dataset.mwnote,el.value.trim());await saveOps(b);};
     el.onkeydown=e=>{if(e.key==="Enter")el.blur();};});
+  document.querySelectorAll("[data-mwdue]").forEach(el=>el.onchange=async()=>{
+    const b=S.brands[S.mwSel],id=el.dataset.mwdue;
+    const auto=el.classList.contains("auto")?el.defaultValue:"";
+    opsSet(b,"due",id,(el.value&&el.value!==auto)?el.value:"");
+    render();await saveOps(b);});
   const mpdf=document.getElementById("mwpdf");if(mpdf)mpdf.onclick=()=>openMasterPdf();
   const wp=document.getElementById("wbspdf");if(wp)wp.onclick=()=>openWbsPdf();
   document.querySelectorAll("[data-grant]").forEach(el=>el.onclick=async()=>{try{await api("/api/users?k="+encodeURIComponent(AKEY),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({phone:el.dataset.grant,role:"admin"})});}catch(e){alert("권한 부여에 실패했어요.");}await loadUsers();render();});

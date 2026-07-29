@@ -171,6 +171,43 @@ input[type=date]:focus,.tinput:focus{outline:none;border-color:var(--blue)}
 .urow{display:flex;align-items:center;gap:10px;padding:13px 16px;border:1.5px solid var(--line);border-radius:14px;margin-bottom:9px;background:var(--card);flex-wrap:wrap}
 .urole{font-size:12px;font-weight:700;border-radius:7px;padding:3px 9px;flex:none}
 .mv{display:flex;flex-direction:column;gap:2px;flex:none}
+/* ---- WBS dashboard ---- */
+.wbswrap{max-width:1180px}
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.kcard{background:var(--section);border-radius:16px;padding:16px 18px}
+.kcard .kl{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:7px}
+.kcard .kv{font-size:30px;font-weight:900;letter-spacing:-.03em;color:var(--ink);line-height:1.1}
+.kcard .kv.b{color:var(--blue)} .kcard .kv.w{color:var(--warn)} .kcard .kv.g{color:var(--good)}
+.kcard .ks{font-size:11.5px;color:var(--muted);margin-top:5px}
+.wtbl{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+.wtbl th{font-size:11.5px;font-weight:700;color:var(--muted);text-align:center;padding:0 6px 10px}
+.wtbl th.l{text-align:left;padding-left:4px}
+.wtbl td{padding:9px 6px;border-top:1px solid var(--line);vertical-align:middle;text-align:center}
+.wtbl td.l{text-align:left;padding-left:4px}
+.wtbl tr.wrow:hover td{background:var(--section);cursor:pointer}
+.wbn{font-weight:800;font-size:14px;color:var(--ink);letter-spacing:-.01em}
+.wcell{display:inline-flex;align-items:center;justify-content:center;width:46px;height:30px;border-radius:9px;font-size:11.5px;font-weight:800}
+.wc-done{background:var(--blue);color:#fff}
+.wc-prog{background:var(--blue-weak);color:var(--blue-ink)}
+.wc-wait{background:var(--section);color:var(--muted)}
+.wbar{position:relative;width:96px;height:7px;border-radius:4px;background:var(--line);overflow:hidden;display:inline-block;vertical-align:middle}
+.wbar i{position:absolute;left:0;top:0;bottom:0;background:var(--blue);border-radius:4px}
+.wpct{font-size:12.5px;font-weight:800;color:var(--ink);margin-left:8px;font-variant-numeric:tabular-nums}
+.wstage{font-size:12.5px;font-weight:700;color:var(--sub)}
+.wago{font-size:12px;color:var(--muted)}
+.wago.stale{color:var(--warn);font-weight:700}
+.wlegend{display:flex;gap:16px;align-items:center;margin-top:14px;font-size:11.5px;color:var(--muted);flex-wrap:wrap}
+.wlegend span.d{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.bsec{margin-top:30px}
+.bsec h3{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:4px}
+.bsec .bsub{font-size:12px;color:var(--muted);margin-bottom:14px}
+.brow{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;background:var(--section);border-radius:14px;margin-bottom:9px}
+.brow .bnm{font-weight:800;font-size:13.5px;color:var(--ink);flex:none;width:130px}
+.brow .bitems{flex:1;font-size:12.5px;color:var(--sub);line-height:1.7}
+.gate{display:inline-block;font-size:10.5px;font-weight:800;color:var(--danger);background:rgba(240,68,82,.09);border-radius:5px;padding:1px 6px;margin-left:4px}
+.redoc{display:inline-block;font-size:10.5px;font-weight:800;color:var(--warn);background:var(--warn-weak);border-radius:5px;padding:1px 6px;margin-left:4px}
+.wdone{padding:18px;background:var(--good-weak);border-radius:14px;font-size:13px;font-weight:700;color:var(--good)}
+@media (max-width:900px){.kgrid{grid-template-columns:repeat(2,1fr)}.wtbl{font-size:12px}}
 .mv button{border:1px solid var(--line-2);background:var(--card);color:var(--muted);border-radius:6px;font-size:9px;line-height:1;padding:3px 5px;cursor:pointer}
 .mv button:hover:not(:disabled){color:var(--blue);border-color:var(--blue)}
 .mv button:disabled{opacity:.3;cursor:default}
@@ -226,7 +263,7 @@ const qsp=new URLSearchParams(location.search);
 const BTOK=qsp.get("b");
 const ADMIN_PATH=/\/admin\/?$/.test(location.pathname);
 let AKEY=qsp.get("k")||(ADMIN_PATH?(localStorage.getItem("smt_akey")||""):"");
-let S={mode:BTOK?"brand":(AKEY?"admin":(ADMIN_PATH?"keyin":"landing")),keyerr:null,me:null,adminTab:"brands",users:[],authView:"login",meMsg:null,meMsgErr:false,brand:null,viewStep:undefined,brands:[],adminSel:0,saving:"idle",newLink:null,uploading:{}};
+let S={mode:BTOK?"brand":(AKEY?"admin":(ADMIN_PATH?"keyin":"landing")),keyerr:null,me:null,adminTab:"wbs",users:[],authView:"login",meMsg:null,meMsgErr:false,brand:null,viewStep:undefined,brands:[],adminSel:0,saving:"idle",newLink:null,uploading:{}};
 
 const STEPS=[
  {tag:"0단계",title:"NDA 체결",desc:"상세 자료 검토를 시작하기 전, 비밀유지계약(NDA)을 먼저 체결해요. 초안(양방향)은 소프트먼트가 드려요.",
@@ -664,13 +701,60 @@ function fieldHtml(f,data){
   return "";
 }
 
+/* ---- WBS helpers ---- */
+function liveFields(st,data){
+  return st.fields.filter(f=>{
+    if(f.type==="info"||f.type==="docs"||f.type==="downloads")return false;
+    if(f.showIf&&!f.showIf(data))return false;
+    return true;});
+}
+function stepStat(si,data){
+  const st=STEPS[si];const fs=liveFields(st,data).filter(f=>f.req);
+  const tot=fs.length;const done=fs.filter(f=>fieldDone(f,data)).length;
+  const started=liveFields(st,data).some(f=>data[f.k]!==undefined);
+  return {tot,done,pct:tot?Math.round(done/tot*100):100,started,all:stepDone(si,data)};
+}
+function overallPct(data){
+  let t=0,d=0;
+  STEPS.forEach((_,i)=>{const s=stepStat(i,data);t+=s.tot;d+=s.done;});
+  return t?Math.round(d/t*100):0;
+}
+function pendingItems(data,limit){
+  const out=[];
+  STEPS.forEach((st,si)=>{
+    liveFields(st,data).forEach(f=>{
+      if(!f.req||fieldDone(f,data))return;
+      out.push({step:st.tag,label:f.alabel||shortL(f.label),gate:!!f.block});
+    });
+  });
+  return limit?out.slice(0,limit):out;
+}
+function redoItems(data){
+  const out=[];
+  STEPS.forEach(st=>liveFields(st,data).forEach(f=>{
+    if(f.type!=="checklist")return;const v=data[f.k]||{};
+    (f.items||[]).forEach(it=>{const s=v[it.id];
+      if(s&&typeof s==="object"&&s.redo)out.push({label:shortL(it.label),msg:s.redo.msg||""});});
+  }));
+  return out;
+}
+function daysSince(iso){if(!iso)return null;return Math.floor((Date.now()-new Date(iso).getTime())/86400000);}
+function agoText(iso){
+  const d=daysSince(iso);
+  if(d===null)return "미시작";
+  if(d<=0)return "오늘";
+  if(d===1)return "어제";
+  return d+"일 전";
+}
+
 /* ---- admin ---- */
 function roleLabel(r){return r==="superadmin"?"최고 관리자":r==="admin"?"일반 관리자":"권한 대기";}
 function fmtPhone(p){return p?(""+p).replace(/^(\d{3})(\d{3,4})(\d{4})$/,"$1-$2-$3"):"";}
 function adminTabs(){
   const role=S.me?S.me.role:"";
   return `<div class="tabs">
-    <button class="tabbtn ${S.adminTab==="brands"?"on":""}" data-atab="brands">온보딩 현황</button>
+    <button class="tabbtn ${S.adminTab==="wbs"?"on":""}" data-atab="wbs">전체 현황 (WBS)</button>
+    <button class="tabbtn ${S.adminTab==="brands"?"on":""}" data-atab="brands">브랜드 상세</button>
     ${role==="superadmin"?`<button class="tabbtn ${S.adminTab==="users"?"on":""}" data-atab="users">회원 관리</button>`:""}
     ${S.me&&!S.me.legacy?`<button class="tabbtn ${S.adminTab==="me"?"on":""}" data-atab="me">내 정보</button>`:""}</div>`;
 }
@@ -697,7 +781,79 @@ function meView(){const m=S.me||{};
     <button id="me_logout" class="tabbtn" style="width:100%;margin-top:26px;color:var(--danger)">로그아웃</button>
     ${S.meMsg?`<div style="margin-top:12px;font-size:13.5px;font-weight:600;color:${S.meMsgErr?"var(--danger)":"var(--blue-ink)"}">${esc(S.meMsg)}</div>`:""}</div>`;
 }
+function wbsView(){
+  const bs=S.brands||[];
+  if(!bs.length)return `<div class="wbswrap">${adminTabs()}<div style="color:var(--muted);font-size:13px">등록된 브랜드가 없어요. [브랜드 상세] 탭에서 브랜드를 추가하세요.</div></div>`;
+  const rowsData=bs.map((b,i)=>{
+    const data=b.data||{};
+    const stats=STEPS.map((_,si)=>stepStat(si,data));
+    const pct=overallPct(data);
+    const cur=firstIncomplete(data);
+    const days=daysSince(b.updatedAt);
+    return {b,i,data,stats,pct,cur,days,
+      allDone:cur>=STEPS.length,
+      pend:pendingItems(data,3),redo:redoItems(data)};
+  });
+  const cnt=rowsData.length;
+  const avg=Math.round(rowsData.reduce((a,r)=>a+r.pct,0)/cnt);
+  const fin=rowsData.filter(r=>r.allDone).length;
+  const stale=rowsData.filter(r=>!r.allDone&&(r.days===null||r.days>=7)).length;
+
+  const kpi=`<div class="kgrid">
+    <div class="kcard"><div class="kl">진행 브랜드</div><div class="kv">${cnt}<span style="font-size:15px;font-weight:700;color:var(--muted)">개</span></div><div class="ks">온보딩 등록 기준</div></div>
+    <div class="kcard"><div class="kl">평균 진척률</div><div class="kv b">${avg}<span style="font-size:17px">%</span></div><div class="ks">필수 항목 완료 기준</div></div>
+    <div class="kcard"><div class="kl">온보딩 완료</div><div class="kv ${fin?"g":""}">${fin}<span style="font-size:15px;font-weight:700;color:var(--muted)">개</span></div><div class="ks">개발·출시 단계 진입 가능</div></div>
+    <div class="kcard"><div class="kl">7일+ 정체</div><div class="kv ${stale?"w":""}">${stale}<span style="font-size:15px;font-weight:700;color:var(--muted)">개</span></div><div class="ks">브랜드 회신 대기 중</div></div></div>`;
+
+  const head=`<tr><th class="l" style="width:150px">브랜드</th>
+    ${STEPS.map(st=>`<th>${esc(st.tag)}</th>`).join("")}
+    <th style="width:170px">전체 진척</th><th style="width:120px">현재 단계</th><th style="width:90px">최종 업데이트</th></tr>`;
+
+  const rows=rowsData.map(r=>{
+    const cells=r.stats.map(s=>{
+      if(s.all)return `<td><span class="wcell wc-done">✓</span></td>`;
+      if(s.started||s.done>0)return `<td><span class="wcell wc-prog">${s.pct}%</span></td>`;
+      return `<td><span class="wcell wc-wait">–</span></td>`;
+    }).join("");
+    const stage=r.allDone?'<span class="wstage" style="color:var(--good)">전 단계 완료</span>'
+      :`<span class="wstage">${esc(STEPS[r.cur].tag)} ${r.stats[r.cur].started?"진행 중":"대기"}</span>`;
+    const ago=r.allDone?`<span class="wago">${esc(agoText(r.b.updatedAt))}</span>`
+      :`<span class="wago ${(r.days===null||r.days>=7)?"stale":""}">${esc(agoText(r.b.updatedAt))}</span>`;
+    return `<tr class="wrow" data-wsel="${r.i}">
+      <td class="l"><span class="wbn">${esc(r.b.name)}</span></td>${cells}
+      <td><span class="wbar"><i style="width:${r.pct}%"></i></span><span class="wpct">${r.pct}%</span></td>
+      <td>${stage}</td><td>${ago}</td></tr>`;
+  }).join("");
+
+  const legend=`<div class="wlegend">
+    <div><span class="d" style="background:var(--blue)"></span>단계 완료</div>
+    <div><span class="d" style="background:var(--blue-weak)"></span>진행 중 (필수 항목 완료율)</div>
+    <div><span class="d" style="background:var(--section);border:1px solid var(--line)"></span>시작 전</div>
+    <div style="color:var(--muted)">· 행을 클릭하면 브랜드 상세로 이동해요</div></div>`;
+
+  const blocked=rowsData.filter(r=>!r.allDone&&(r.pend.length||r.redo.length));
+  const bsec=blocked.length?`<div class="bsec"><h3>지금 막혀 있는 항목</h3>
+    <div class="bsub">브랜드별로 다음 단계로 넘어가기 위해 회신이 필요한 항목이에요. (각 브랜드 최대 3건 표시)</div>
+    ${blocked.map(r=>`<div class="brow"><div class="bnm">${esc(r.b.name)}</div>
+      <div class="bitems">${r.pend.map(p=>`<b style="color:var(--muted);font-weight:700">${esc(p.step)}</b> ${esc(p.label)}${p.gate?'<span class="gate">필수 게이트</span>':""}`).join(" &nbsp;·&nbsp; ")}
+      ${r.redo.map(x=>`<br><b style="color:var(--muted);font-weight:700">서류 보완</b> ${esc(x.label)}<span class="redoc">보완 요청 중</span>${x.msg?` <span style="color:var(--muted)">— ${esc(x.msg)}</span>`:""}`).join("")}</div></div>`).join("")}
+    </div>`
+    :`<div class="bsec"><h3>지금 막혀 있는 항목</h3><div class="wdone">✓ 모든 브랜드가 필수 항목을 완료했어요.</div></div>`;
+
+  return `<div class="wbswrap">
+    <div class="adminhead" style="margin-bottom:16px"><h2>전체 온보딩 현황</h2>
+      <span style="flex:1"></span>
+      <button class="ghost blue" id="wbspdf">📄 보고용 PDF</button></div>
+    ${adminTabs()}
+    ${kpi}
+    <table class="wtbl"><thead>${head}</thead><tbody>${rows}</tbody></table>
+    ${legend}
+    ${bsec}
+    <div class="foot2" style="margin-top:26px">진척률은 각 단계의 <b>필수 항목</b> 완료 개수를 기준으로 계산돼요. 조건부로 숨겨진 항목(해당없음 등)은 집계에서 제외됩니다.</div>
+  </div>`;
+}
 function adminView(){
+  if(S.adminTab==="wbs")return `<div class="adminmain">${wbsView()}</div>`;
   if(S.adminTab==="users")return `<div class="adminmain"><div class="adminhead"><h2>회원 관리</h2></div>${adminTabs()}${usersView()}</div>`;
   if(S.adminTab==="me")return `<div class="adminmain"><div class="adminhead"><h2>내 정보</h2></div>${adminTabs()}${meView()}</div>`;
   if(S.adminSel>=S.brands.length)S.adminSel=0;
@@ -765,6 +921,43 @@ function answers(st,data){
 }
 
 /* ---- PDF (print) ---- */
+function openWbsPdf(){
+  const bs=S.brands||[];
+  const rowsData=bs.map(b=>{const data=b.data||{};
+    return {b,data,stats:STEPS.map((_,si)=>stepStat(si,data)),pct:overallPct(data),
+      cur:firstIncomplete(data),days:daysSince(b.updatedAt),
+      pend:pendingItems(data,3),redo:redoItems(data)};});
+  const cnt=rowsData.length||1;
+  const avg=Math.round(rowsData.reduce((a,r)=>a+r.pct,0)/cnt);
+  const fin=rowsData.filter(r=>r.cur>=STEPS.length).length;
+  const stale=rowsData.filter(r=>r.cur<STEPS.length&&(r.days===null||r.days>=7)).length;
+  const rows=rowsData.map(r=>{
+    const cells=r.stats.map(s=>`<td style="text-align:center">${s.all?"완료":(s.started||s.done>0)?s.pct+"%":"–"}</td>`).join("");
+    const stage=r.cur>=STEPS.length?"전 단계 완료":STEPS[r.cur].tag+" "+(r.stats[r.cur].started?"진행 중":"대기");
+    return `<tr><td><b>${esc(r.b.name)}</b></td>${cells}<td style="text-align:center"><b>${r.pct}%</b></td><td style="text-align:center">${esc(stage)}</td><td style="text-align:center">${esc(agoText(r.b.updatedAt))}</td></tr>`;
+  }).join("");
+  const blocked=rowsData.filter(r=>r.cur<STEPS.length&&(r.pend.length||r.redo.length));
+  const bl=blocked.length?blocked.map(r=>`<tr><td class="pk">${esc(r.b.name)}</td><td>${
+      r.pend.map(p=>esc(p.step)+" "+esc(p.label)+(p.gate?" (필수 게이트)":"")).join(" · ")
+    }${r.redo.map(x=>"<br>서류 보완 : "+esc(x.label)+" — 보완 요청 중"+(x.msg?" ("+esc(x.msg)+")":"")).join("")}</td></tr>`).join("")
+    :'<tr><td colspan="2">모든 브랜드가 필수 항목을 완료했습니다.</td></tr>';
+  const html=`<div class="pdoc">
+    <div class="pcover"><div class="pbrand">소프트먼트 · 자사앱/멤버십 온보딩</div>
+      <h1>전체 온보딩 진척 현황</h1>
+      <div class="pmeta">기준일 ${esc(fmt(new Date().toISOString()))} · 대상 ${bs.length}개 브랜드</div>
+      <div class="pnote">본 문서는 브랜드별 온보딩 진척 현황을 경영 보고용으로 요약한 자료입니다. 진척률은 각 단계 필수 항목의 완료 개수를 기준으로 산정했습니다.</div></div>
+    <div class="ps"><div class="ph">요약</div><table>
+      <tr><td class="pk">진행 브랜드</td><td>${bs.length}개</td></tr>
+      <tr><td class="pk">평균 진척률</td><td>${avg}%</td></tr>
+      <tr><td class="pk">온보딩 완료</td><td>${fin}개</td></tr>
+      <tr><td class="pk">7일 이상 정체</td><td>${stale}개</td></tr></table></div>
+    <div class="ps"><div class="ph">브랜드별 단계 진척 (WBS)</div><table>
+      <tr><td class="pk">브랜드</td>${STEPS.map(st=>`<td class="pk" style="text-align:center">${esc(st.tag)}</td>`).join("")}<td class="pk" style="text-align:center">전체</td><td class="pk" style="text-align:center">현재 단계</td><td class="pk" style="text-align:center">최종 업데이트</td></tr>
+      ${rows}</table></div>
+    <div class="ps"><div class="ph">지금 막혀 있는 항목</div><table>${bl}</table></div>
+  </div>`;
+  const pr=document.getElementById("printroot");pr.innerHTML=html;window.print();
+}
 function openPdf(b){
   const data=b.data||{};const pct=progressOf(data);
   let body="";
@@ -885,6 +1078,8 @@ function bind(){
     catch(err){alert("다운로드 링크 생성에 실패했어요.");}});
   const rf=document.getElementById("refresh");if(rf)rf.onclick=loadAdmin;
   document.querySelectorAll("[data-atab]").forEach(el=>el.onclick=async()=>{S.adminTab=el.dataset.atab;S.meMsg=null;if(S.adminTab==="users")await loadUsers();render();});
+  document.querySelectorAll("[data-wsel]").forEach(el=>el.onclick=()=>{S.adminSel=+el.dataset.wsel;S.adminTab="brands";S.newLink=null;render();window.scrollTo({top:0,behavior:"smooth"});});
+  const wp=document.getElementById("wbspdf");if(wp)wp.onclick=()=>openWbsPdf();
   document.querySelectorAll("[data-grant]").forEach(el=>el.onclick=async()=>{try{await api("/api/users?k="+encodeURIComponent(AKEY),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({phone:el.dataset.grant,role:"admin"})});}catch(e){alert("권한 부여에 실패했어요.");}await loadUsers();render();});
   document.querySelectorAll("[data-revoke]").forEach(el=>el.onclick=async()=>{try{await api("/api/users?k="+encodeURIComponent(AKEY),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({phone:el.dataset.revoke,role:"member"})});}catch(e){alert("권한 해제에 실패했어요.");}await loadUsers();render();});
   document.querySelectorAll("[data-udel]").forEach(el=>el.onclick=async()=>{if(!confirm("이 회원을 삭제할까요?"))return;try{await api("/api/users?phone="+encodeURIComponent(el.dataset.udel)+"&k="+encodeURIComponent(AKEY),{method:"DELETE"});}catch(e){alert("삭제에 실패했어요.");}await loadUsers();render();});

@@ -48,7 +48,9 @@ button:focus:not(:focus-visible){outline:none}
 
 /* ============================ TOP BAR ============================ */
 .top{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);padding:0 var(--pad);height:58px;display:flex;align-items:center;gap:12px}
+  border-bottom:1px solid var(--line);height:58px}
+.top .inner{max-width:var(--wrap);margin:0 auto;padding:0 var(--pad);height:100%;
+  display:flex;align-items:center;gap:12px}
 .brandmark{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px;letter-spacing:-.02em}
 .dot{width:26px;height:26px;border-radius:8px;background:var(--blue);display:grid;place-items:center;
   color:#fff;font-size:13px;font-weight:900;flex:none}
@@ -771,11 +773,11 @@ function render(){
 }
 function topBar(){
   const roleCls=S.me?(S.me.role==="superadmin"?"r-super":S.me.role==="admin"?"r-admin":"r-member"):"r-admin";
-  return `<div class="top"><div class="brandmark"><span class="dot">S</span> 소프트먼트 온보딩</div>
+  return `<div class="top"><div class="inner"><div class="brandmark"><span class="dot">S</span> 소프트먼트 온보딩</div>
     ${S.mode==="brand"?`<span style="color:var(--muted);font-weight:700;font-size:var(--fs-body)">· ${esc(S.brand.name)}</span>`:""}
     <span class="sp"></span><span id="savest" class="savest"></span>
     ${S.mode==="admin"?`<span class="whoami">${S.me?esc(S.me.name||"관리자"):"관리자"}<span class="rb ${roleCls}">${S.me?roleLabel(S.me.role):"관리자"}</span></span>
-      <button class="ghost" id="refresh">새로고침</button><button class="ghost" id="akout">로그아웃</button>`:""}</div>`;
+      <button class="ghost" id="refresh">새로고침</button><button class="ghost" id="akout">로그아웃</button>`:""}</div></div>`;
 }
 
 /* ---- brand ---- */

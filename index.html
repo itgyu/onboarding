@@ -411,9 +411,18 @@ textarea.ta:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var
 .p-done{background:var(--good-weak);color:var(--good)}
 .p-prog{background:var(--blue-weak);color:var(--blue-ink)}
 .p-wait{background:var(--sunken);color:var(--muted)}
-.sstep{border-bottom:1px solid var(--line);padding:18px 22px}
+.sstep{border-bottom:1px solid var(--line)}
 .sstep:last-child{border-bottom:0}
-.sstep h4{font-size:var(--fs-h3);font-weight:900;display:flex;align-items:center;gap:9px;margin:0 0 12px;
+.sstep .sh{width:100%;display:flex;align-items:center;gap:9px;padding:15px 22px;background:none;
+  border:0;text-align:left;font-family:inherit;transition:background .12s}
+.sstep .sh:hover{background:var(--section)}
+.sstep.open .sh{background:var(--section)}
+.sstep .sh .cv{flex:none;color:var(--muted);font-size:11px;transition:transform .18s;margin-left:2px}
+.sstep.open .sh .cv{transform:rotate(180deg);color:var(--blue)}
+.sstep .sh .cnt{flex:none;font-size:var(--fs-micro);font-weight:800;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.sstep .sbody{padding:4px 22px 18px}
+.sstep h4{font-size:var(--fs-h3);font-weight:900;display:flex;align-items:center;gap:9px;margin:0;flex:1;min-width:0;
   letter-spacing:-.02em}
 .arow{display:flex;gap:16px;padding:9px 0;border-top:1px solid var(--line)}
 .arow:first-of-type{border-top:0}
@@ -466,7 +475,7 @@ const qsp=new URLSearchParams(location.search);
 const BTOK=qsp.get("b");
 const ADMIN_PATH=/\/admin\/?$/.test(location.pathname);
 let AKEY=qsp.get("k")||(ADMIN_PATH?(localStorage.getItem("smt_akey")||""):"");
-let S={mode:BTOK?"brand":(AKEY?"admin":(ADMIN_PATH?"keyin":"landing")),keyerr:null,me:null,adminTab:"wbs",users:[],authView:"login",meMsg:null,meMsgErr:false,brand:null,viewStep:undefined,brands:[],adminSel:0,saving:"idle",newLink:null,uploading:{}};
+let S={mode:BTOK?"brand":(AKEY?"admin":(ADMIN_PATH?"keyin":"landing")),keyerr:null,me:null,adminTab:"wbs",users:[],authView:"login",meMsg:null,meMsgErr:false,brand:null,viewStep:undefined,openStep:null,brands:[],adminSel:0,saving:"idle",newLink:null,uploading:{}};
 
 const STEPS=[
  {tag:"0단계",short:"NDA",title:"NDA 체결",desc:"상세 자료 검토를 시작하기 전, 비밀유지계약(NDA)을 먼저 체결해요. 초안(양방향)은 소프트먼트가 드려요.",
@@ -1172,12 +1181,18 @@ function sheetHtml(b){
   const data=b.data||{};const all=STEPS.every((_,i)=>stepDone(i,data));const pct=overallPct(data);
   const rows=STEPS.map((st,si)=>{const done=stepDone(si,data);const started=st.fields.some(f=>data[f.k]!==undefined);
     const pill=done?'<span class="pill p-done">완료</span>':started?'<span class="pill p-prog">진행중</span>':'<span class="pill p-wait">시작 전</span>';
-    return `<div class="sstep"><h4>${esc(st.tag)} · ${esc(st.title)} ${pill}</h4>${answers(st,data)}</div>`;}).join("");
+    const ss=stepStat(si,data);const open=S.openStep===si;
+    return `<div class="sstep ${open?"open":""}">
+      <button class="sh" data-sstep="${si}" aria-expanded="${open}">
+        <h4>${esc(st.tag)} · ${esc(st.title)} ${pill}</h4>
+        <span class="cnt">${ss.done} / ${ss.tot}</span><span class="cv">▼</span></button>
+      ${open?`<div class="sbody">${answers(st,data)}</div>`:""}</div>`;}).join("");
   return `<div class="sheethd">
     <div class="r1"><h3>${esc(b.name)}</h3>${all?'<span class="pill p-done">온보딩 완료</span>':`<span class="pill p-prog">진행 ${pct}%</span>`}</div>
     ${b.updatedAt?`<div class="metaline">마지막 업데이트 ${esc(fmt(b.updatedAt))}</div>`:""}
     <div class="r2"><button class="ghost blue" data-pdf="${S.adminSel}">개발 전달용 PDF</button>
-      <button class="ghost" data-copybrand="${S.adminSel}">브랜드 링크 복사</button></div>
+      <button class="ghost" data-copybrand="${S.adminSel}">브랜드 링크 복사</button>
+      <span style="flex:1"></span><span class="hint">단계를 클릭하면 제출 내용이 펼쳐져요</span></div>
     </div>${rows}`;
 }
 function fmt(iso){try{const d=new Date(iso);return d.getFullYear()+"."+p2(d.getMonth()+1)+"."+p2(d.getDate())+" "+p2(d.getHours())+":"+p2(d.getMinutes());}catch(e){return iso.slice(0,16);}}
@@ -1340,7 +1355,8 @@ function bind(){
   document.querySelectorAll("[data-tin]").forEach(el=>{el.oninput=()=>{const k=el.dataset.tin;D()[k]=D()[k]||{};D()[k][el.dataset.item]=el.value;scheduleSave();};el.onchange=()=>render();});
   document.querySelectorAll("[data-up]").forEach(el=>el.onclick=e=>{e.stopPropagation();const inp=document.querySelector(`input[data-fin="${el.dataset.up}"][data-item="${el.dataset.item}"]`);if(inp)inp.click();});
   document.querySelectorAll("[data-fin]").forEach(el=>el.onchange=()=>uploadFile(el.dataset.fin,el.dataset.item,el.files[0]));
-  document.querySelectorAll("[data-asel]").forEach(el=>el.onclick=()=>{S.adminSel=+el.dataset.asel;S.newLink=null;render();});
+  document.querySelectorAll("[data-asel]").forEach(el=>el.onclick=()=>{S.adminSel=+el.dataset.asel;S.newLink=null;S.openStep=null;render();});
+  document.querySelectorAll("[data-sstep]").forEach(el=>el.onclick=()=>{const i=+el.dataset.sstep;S.openStep=(S.openStep===i)?null:i;render();});
   document.querySelectorAll("[data-copy]").forEach(el=>el.onclick=()=>navigator.clipboard.writeText(el.dataset.copy).then(()=>el.textContent="복사됨 ✓"));
   document.querySelectorAll("[data-copybrand]").forEach(el=>el.onclick=()=>{const b=S.brands[+el.dataset.copybrand];const url=location.origin+location.pathname.replace(/admin\/?$/,"")+"?b="+b.token;
     navigator.clipboard.writeText(url).then(()=>{el.textContent="복사됨 ✓";setTimeout(()=>el.textContent="브랜드 링크 복사",1500);});});
@@ -1373,7 +1389,7 @@ function bind(){
     catch(err){alert("다운로드 링크 생성에 실패했어요.");}});
   const rf=document.getElementById("refresh");if(rf)rf.onclick=loadAdmin;
   document.querySelectorAll("[data-atab]").forEach(el=>el.onclick=async()=>{S.adminTab=el.dataset.atab;S.meMsg=null;if(S.adminTab==="users")await loadUsers();render();});
-  document.querySelectorAll("[data-wsel]").forEach(el=>el.onclick=()=>{S.adminSel=+el.dataset.wsel;S.adminTab="brands";S.newLink=null;render();window.scrollTo({top:0,behavior:"smooth"});});
+  document.querySelectorAll("[data-wsel]").forEach(el=>el.onclick=()=>{S.adminSel=+el.dataset.wsel;S.adminTab="brands";S.newLink=null;S.openStep=null;render();window.scrollTo({top:0,behavior:"smooth"});});
   const wp=document.getElementById("wbspdf");if(wp)wp.onclick=()=>openWbsPdf();
   document.querySelectorAll("[data-grant]").forEach(el=>el.onclick=async()=>{try{await api("/api/users?k="+encodeURIComponent(AKEY),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({phone:el.dataset.grant,role:"admin"})});}catch(e){alert("권한 부여에 실패했어요.");}await loadUsers();render();});
   document.querySelectorAll("[data-revoke]").forEach(el=>el.onclick=async()=>{try{await api("/api/users?k="+encodeURIComponent(AKEY),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({phone:el.dataset.revoke,role:"member"})});}catch(e){alert("권한 해제에 실패했어요.");}await loadUsers();render();});

@@ -1021,6 +1021,7 @@ function agoText(iso){
 }
 
 /* ---- admin ---- */
+const canEdit=()=>!!(S.me&&S.me.role==="superadmin");
 function roleLabel(r){return r==="superadmin"?"최고 관리자":r==="admin"?"일반 관리자":"권한 대기";}
 function fmtPhone(p){return p?(""+p).replace(/^(\d{3})(\d{3,4})(\d{4})$/,"$1-$2-$3"):"";}
 function adminNav(){
@@ -1163,16 +1164,17 @@ function adminView(){
     return `<div class="bitem ${i===S.adminSel?"on":""} ${fin?"done":""}" data-asel="${i}">
       <div style="flex:1;min-width:0"><div class="bn">${esc(b.name)}</div><div class="mini"><i style="width:${pct}%"></i></div></div>
       <span class="pct tnum">${pct}%</span>
-      <span class="mv"><button data-mvup="${i}" ${i===0?"disabled":""} title="위로">▲</button><button data-mvdn="${i}" ${i===S.brands.length-1?"disabled":""} title="아래로">▼</button></span></div>`;}).join("");
+      ${canEdit()?`<span class="mv"><button data-mvup="${i}" ${i===0?"disabled":""} title="위로">▲</button><button data-mvdn="${i}" ${i===S.brands.length-1?"disabled":""} title="아래로">▼</button></span>`:""}</div>`;}).join("");
   const b=S.brands[S.adminSel];
   const linkHtml=S.newLink?`<div class="linkbox">✅ <b>${esc(S.newLink.name)}</b> 링크가 생성됐어요. 브랜드에 전달하세요.<span class="u">${esc(S.newLink.url)}</span><button class="ghost blue" data-copy="${esc(S.newLink.url)}">링크 복사</button></div>`:"";
   return `<div class="adminmain">
-    ${pageHead("브랜드 상세","브랜드가 제출한 내용을 항목별로 확인하고, 서류를 열람·보완 요청할 수 있어요.")}
+    ${pageHead("브랜드 상세",canEdit()?"브랜드가 제출한 내용을 항목별로 확인하고, 서류를 열람·보완 요청할 수 있어요."
+      :"브랜드가 제출한 내용과 첨부 서류를 열람할 수 있어요. <b>열람 전용 계정</b>이라 추가·삭제·보완 요청은 최고 관리자만 가능합니다.")}
     <div class="agrid">
       <div class="blist"><div class="lt">브랜드 ${S.brands.length}개</div>${list||'<div style="padding:14px;color:var(--muted);font-size:var(--fs-sm)">브랜드를 추가하세요.</div>'}
-        <div class="addrow"><input id="newb" class="tinput" placeholder="새 브랜드명"><button id="addb">추가</button></div>${linkHtml}</div>
+        ${canEdit()?`<div class="addrow"><input id="newb" class="tinput" placeholder="새 브랜드명"><button id="addb">추가</button></div>${linkHtml}`:""}</div>
       <div><div class="sheet">${b?sheetHtml(b):'<div class="empty">브랜드를 선택하세요</div>'}</div>
-        ${b?`<div class="dangerzone"><div class="dzt"><b>브랜드 삭제</b><br>제출 내용과 첨부 서류가 모두 삭제되며 복구할 수 없어요.</div>
+        ${(b&&canEdit())?`<div class="dangerzone"><div class="dzt"><b>브랜드 삭제</b><br>제출 내용과 첨부 서류가 모두 삭제되며 복구할 수 없어요.</div>
           <button class="ghost danger" data-del="${esc(b.id)}">브랜드 삭제</button></div>`:""}
         <div class="foot2">브랜드별 전용 링크(<b>?b=토큰</b>)를 전달하면, 각자 기기에서 제출한 내용이 이 화면에 실시간 취합돼요. · 데이터는 AWS(DynamoDB·S3)에 저장됩니다.</div>
       </div></div></div>`;
@@ -1191,7 +1193,7 @@ function sheetHtml(b){
     <div class="r1"><h3>${esc(b.name)}</h3>${all?'<span class="pill p-done">온보딩 완료</span>':`<span class="pill p-prog">진행 ${pct}%</span>`}</div>
     ${b.updatedAt?`<div class="metaline">마지막 업데이트 ${esc(fmt(b.updatedAt))}</div>`:""}
     <div class="r2"><button class="ghost blue" data-pdf="${S.adminSel}">개발 전달용 PDF</button>
-      <button class="ghost" data-copybrand="${S.adminSel}">브랜드 링크 복사</button>
+      ${canEdit()?`<button class="ghost" data-copybrand="${S.adminSel}">브랜드 링크 복사</button>`:""}
       <span style="flex:1"></span><span class="hint">단계를 클릭하면 제출 내용이 펼쳐져요</span></div>
     </div>${rows}`;
 }
@@ -1211,8 +1213,8 @@ function answers(st,data){
     else if(f.type==="checklist"){
       const parts=f.items.map(it=>{const s=(v||{})[it.id];
         if(s&&typeof s==="object"&&s.key){
-          const act=s.redo?`<span class="chip chg">보완 요청 중${s.redo.msg?` · “${esc(s.redo.msg)}”`:""}</span><button class="ghost" data-redocancel="${f.k}|${it.id}">요청 취소</button>`
-                          :`<button class="ghost" data-redo="${f.k}|${it.id}">보완 요청</button>`;
+          const act=s.redo?`<span class="chip chg">보완 요청 중${s.redo.msg?` · “${esc(s.redo.msg)}”`:""}</span>${canEdit()?`<button class="ghost" data-redocancel="${f.k}|${it.id}">요청 취소</button>`:""}`
+                          :(canEdit()?`<button class="ghost" data-redo="${f.k}|${it.id}">보완 요청</button>`:"");
           return `<span class="chip file">📎 ${esc(shortL(it.label))} · ${esc(s.name)} <a class="dl" href="#" data-dl="${esc(s.key)}">다운로드</a></span> ${act}`;}
         if(s==="done")return chip(shortL(it.label)+" ✓","ok");
         if(s==="na")return chip(shortL(it.label)+" · 해당없음","no");

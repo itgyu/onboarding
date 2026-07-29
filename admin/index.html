@@ -135,16 +135,16 @@ button:focus:not(:focus-visible){outline:none}
 .stepper .st.done .lb,.stepper .st.done .nm{color:var(--sub)}
 .stepper .st.cur .lb,.stepper .st.cur .nm{color:var(--blue);font-weight:800}
 /* 카드 안 섹션 그룹 */
-.gsec{margin-top:30px;padding-top:26px;border-top:1px solid var(--line)}
+.gsec{margin-top:36px;padding-top:28px;border-top:1px solid var(--line-2)}
 .gsec.first{margin-top:22px;padding-top:0;border-top:0}
 .gsechd{display:flex;align-items:center;gap:9px;margin-bottom:5px;flex-wrap:wrap}
-.gsechd .gn{width:23px;height:23px;border-radius:var(--r-xs);background:var(--blue-weak);
-  color:var(--blue-ink);font-size:11.5px;font-weight:800;display:grid;place-items:center;flex:none}
-.gsechd h3{font-size:var(--fs-h2);font-weight:800;letter-spacing:-.025em;flex:1;min-width:120px}
+.gsechd .gn{width:25px;height:25px;border-radius:var(--r-xs);background:var(--blue);
+  color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;flex:none}
+.gsechd h3{font-size:18px;font-weight:900;letter-spacing:-.03em;flex:1;min-width:120px}
 .gsecpg{font-size:var(--fs-micro);font-weight:800;padding:3px 9px;border-radius:var(--r-full);flex:none}
 .gsecpg.ok{background:var(--good-weak);color:var(--good)}
 .gsecpg.run{background:var(--blue-weak);color:var(--blue-ink)}
-.gsecd{font-size:var(--fs-sm);color:var(--muted);line-height:1.55;margin-left:32px}
+.gsecd{font-size:var(--fs-sm);color:var(--muted);line-height:1.55;margin-left:34px}
 .gsec .field:first-of-type{margin-top:18px}
 /* 하단 고정 내비 */
 .stickynav{position:sticky;bottom:0;z-index:20;margin:26px -28px -26px;padding:14px 28px 16px;
@@ -645,7 +645,7 @@ const STEPS=[
       guide:{what:"멤버십 필수 11개 필드: 가맹점 코드 / 가맹점명 / 직영·가맹 구분 / 사업자등록번호 / 대표자명 / 주소 / 대표 연락처 / 운영 시간(요일별) / 적립 대상 여부(Y/N) / 개별 적립률(표준 외 별도 적용 시) / 지역·상권 구분",
         ours:"엑셀 템플릿은 저희가 드려요. 전 매장 공통 적립·사용이 기본으로 세팅돼요. 결제 개통까지 함께 진행하니 <b>지점 대표자 이메일</b> 열을 추가로 채워주시면, 아래 결제 전자계약을 이 목록으로 바로 발송할 수 있어요."},
       items:[{id:"xls",label:"가맹점 리스트 엑셀 첨부",na:true,file:true}]},
-   {sec:{t:"지점 결제 개통 (PG 전자계약)",d:"오픈 3주 전에 착수하는 작업이에요. 지점 수만큼 시간이 곱해지니 미리 준비해 주세요."},k:"pg_branch_info",type:"info",badge:"결제",alabel:"지점 개통 절차 안내",label:"지점별 결제 개통 절차 — 오픈 3주 전 착수",
+   {sec:{t:"지점 결제 개통 (PG 전자계약)",d:"오픈 3주 전에 착수하는 작업이에요. 지점 수만큼 시간이 곱해지니 미리 준비해 주세요."},k:"pg_branch_info",type:"info",badge:"",alabel:"지점 개통 절차 안내",label:"지점별 결제 개통 절차 — 오픈 3주 전 착수",
      blocks:[
        ["리드타임 기준","오픈 예정일 기준 3주 전에 시작해요. 앞 2주는 지점 전자계약 발송·회수, 남은 1주는 미비 서류 보완과 결제 가맹점 등록에 씁니다."],
        ["① 가맹점 사전 공지 — 브랜드사","가맹점주에게 \"소프트먼트에서 결제 계약서가 발송될 예정\"임을 미리 안내해 주세요. 이 공지가 없으면 지점에서 계약서를 열어보지 않아 회수가 크게 지연됩니다."],
@@ -917,7 +917,7 @@ function fieldHtml(f,data){
   if(f.showIf && !f.showIf(data))return "";
   const v=data[f.k]; const gb=f.guide?guideBox(f.guide):"";
   if(f.type==="info")
-    return `<div class="field"><div class="flabel">${esc(f.label)}</div>${gb}${f.blocks.map(b=>`<div class="pol"><div class="pt"><span class="b">${esc(f.badge||"기본")}</span>${esc(b[0])}</div><div class="pd">${esc(b[1])}</div></div>`).join("")}</div>`;
+    return `<div class="field"><div class="flabel">${esc(f.label)}</div>${gb}${f.blocks.map(b=>`<div class="pol"><div class="pt">${f.badge===""?"":`<span class="b">${esc(f.badge||"기본")}</span>`}${esc(b[0])}</div><div class="pd">${esc(b[1])}</div></div>`).join("")}</div>`;
   if(f.type==="textarea")
     return `<div class="field"><div class="flabel">${esc(f.label)} ${f.req?'<span class="req">필수</span>':''}</div>${gb}<textarea class="ta" data-ta="${f.k}" placeholder="${esc(f.ph||"")}">${esc(v||"")}</textarea></div>`;
   if(f.type==="confirm")

@@ -494,10 +494,13 @@ textarea.ta:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var
   border:1px solid var(--line);border-radius:var(--r-xs);padding:6px 8px;font-family:inherit}
 .mnote:focus{outline:none;border-color:var(--blue)}
 .mnt{color:var(--muted);font-size:var(--fs-micro);line-height:1.5}
-.mdue{width:104px;font-size:var(--fs-micro);font-weight:800;color:var(--ink);background:var(--card);
-  border:1px solid var(--line-2);border-radius:var(--r-xs);padding:5px 6px;font-family:inherit}
-.mdue:focus{outline:none;border-color:var(--blue)}
-.mdue.auto{color:var(--muted);font-weight:700;border-style:dashed}
+/* input[type=date] 전역 규칙(specificity 0,1,1)보다 높게 잡아야 적용돼요 */
+.mwtbl input.mdue{width:106px;font-size:var(--fs-micro);font-weight:800;color:var(--ink);background:var(--card);
+  border:1px solid var(--line-2);border-radius:var(--r-xs);padding:0 6px;height:28px;line-height:1;
+  font-family:inherit;vertical-align:middle}
+.mwtbl input.mdue:focus{outline:none;border-color:var(--blue)}
+.mwtbl input.mdue.auto{color:var(--muted);font-weight:700;border-style:dashed}
+.mwtbl select.msel,.mwtbl input.mnote{vertical-align:middle}
 .mdt.fx{color:var(--ink);font-weight:800}
 .mdauto{display:inline-block;font-size:9.5px;color:var(--faint);font-weight:700;margin-left:5px;white-space:nowrap}
 .mwtbl td.mstc,.mwtbl td.mntc{white-space:normal}

@@ -153,6 +153,9 @@ button:focus:not(:focus-visible){outline:none}
 .stickynav .msg{font-size:var(--fs-sm);font-weight:700;margin-bottom:11px;padding:10px 13px;border-radius:var(--r-sm)}
 .stickynav .msg.wait{color:var(--warn);background:var(--warn-weak)}
 .stickynav .msg.done{color:var(--good);background:var(--good-weak)}
+.robanner{background:var(--warn-weak);color:var(--warn);font-size:var(--fs-sm);font-weight:700;
+  padding:12px 16px;border-radius:var(--r-sm);margin-bottom:16px;line-height:1.55}
+.robanner b{color:var(--ink)}
 .stickynav .row2{display:flex;align-items:center;gap:12px}
 .stickynav .row2 .sp{flex:1}
 .stickynav .btn{padding:13px 22px;font-size:15px;border-radius:var(--r-sm)}
@@ -473,9 +476,10 @@ textarea.ta:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var
 "use strict";
 const qsp=new URLSearchParams(location.search);
 const BTOK=qsp.get("b");
+const VIEWID=qsp.get("view");
 const ADMIN_PATH=/\/admin\/?$/.test(location.pathname);
-let AKEY=qsp.get("k")||(ADMIN_PATH?(localStorage.getItem("smt_akey")||""):"");
-let S={mode:BTOK?"brand":(AKEY?"admin":(ADMIN_PATH?"keyin":"landing")),keyerr:null,me:null,adminTab:"wbs",users:[],authView:"login",meMsg:null,meMsgErr:false,brand:null,viewStep:undefined,openStep:null,brands:[],adminSel:0,saving:"idle",newLink:null,uploading:{}};
+let AKEY=qsp.get("k")||((ADMIN_PATH||VIEWID)?(localStorage.getItem("smt_akey")||""):"");
+let S={mode:VIEWID?"loading":(BTOK?"brand":(AKEY?"admin":(ADMIN_PATH?"keyin":"landing"))),readonly:!!VIEWID,keyerr:null,me:null,adminTab:"wbs",users:[],authView:"login",meMsg:null,meMsgErr:false,brand:null,viewStep:undefined,openStep:null,brands:[],adminSel:0,saving:"idle",newLink:null,uploading:{}};
 
 const STEPS=[
  {tag:"0단계",short:"NDA",title:"NDA 체결",desc:"상세 자료 검토를 시작하기 전, 비밀유지계약(NDA)을 먼저 체결해요. 초안(양방향)은 소프트먼트가 드려요.",
@@ -758,6 +762,7 @@ const API_BASE="https://3l4r2nrpaf.execute-api.ap-northeast-2.amazonaws.com";
 async function api(path,opt){const r=await fetch(API_BASE+path,opt);if(!r.ok)throw new Error("api "+r.status);return r.json();}
 let saveTimer=null;
 function scheduleSave(){
+  if(S.readonly)return;
   S.saving="saving";paintSave();clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{
     try{await api("/api/brand?b="+encodeURIComponent(BTOK),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({data:S.brand.data})});S.saving="ok";}
@@ -856,14 +861,14 @@ function topBar(){
 function brandView(){
   const data=D();const nStep=firstIncomplete(data);
   let vs=(S.viewStep===undefined)?nStep:S.viewStep;
-  vs=Math.max(0,Math.min(vs,nStep));
+  vs=Math.max(0,Math.min(vs,S.readonly?STEPS.length-1:nStep));
   const allDone=nStep>=STEPS.length;
   const stepper=STEPS.map((st,i)=>{const done=stepDone(i,data);const cur=!allDone&&i===vs&&vs<STEPS.length;
-    const go=i<=nStep;
+    const go=S.readonly||i<=nStep;
     return `<button class="st ${done?"done":""} ${cur?"cur":""} ${go?"go":""}" ${go?`data-go="${i}"`:"disabled"}>
       <div class="bar"></div><div class="lbw"><span class="lb">${done?"✓":""}${esc(st.tag)}</span><span class="nm">${esc(st.short||"")}</span></div></button>`;}).join("");
   if(allDone&&(S.viewStep===undefined||S.viewStep>=STEPS.length)){
-    return `<div class="main"><div class="stepper">${stepper}</div>
+    return `<div class="main">${S.readonly?`<div class="robanner">열람 전용 미리보기 · <b>${esc(S.brand.name)}</b> 브랜드가 작성하는 화면이에요. 여기서는 입력·저장되지 않으며, 모든 단계를 자유롭게 둘러볼 수 있어요.</div>`:""}<div class="stepper">${stepper}</div>
       <div class="card finish"><div class="em">🎉</div><div class="big">온보딩 완료</div>
       <p>모든 단계 제출이 완료됐어요.<br>소프트먼트 담당 매니저가 내용을 확인하고 연락드릴게요.</p>
       <div class="nav"><span class="sp"></span><button class="btn sub" data-go="${STEPS.length-1}">제출 내용 다시 보기</button><span class="sp"></span></div></div></div>`;}
@@ -873,19 +878,19 @@ function brandView(){
   if(!complete){const f=st.fields.find(f=>!fieldDone(f,data)&&f.type==="radio"&&f.block&&data[f.k]&&data[f.k]!==f.mustBe);
     gate=`<div class="msg wait">${f?esc(f.block):`남은 필수 항목 ${sstat.tot-sstat.done}개를 완료하면 다음 단계로 넘어갈 수 있어요.`}</div>`;}
   else gate=`<div class="msg done">이 단계 완료! 다음 단계로 넘어갈 수 있어요.</div>`;
-  return `<div class="main"><div class="stepper">${stepper}</div>
+  return `<div class="main">${S.readonly?`<div class="robanner">열람 전용 미리보기 · <b>${esc(S.brand.name)}</b> 브랜드가 작성하는 화면이에요. 여기서는 입력·저장되지 않으며, 모든 단계를 자유롭게 둘러볼 수 있어요.</div>`:""}<div class="stepper">${stepper}</div>
     <div class="card">
       <div class="eyebrow">${esc(st.tag)} · STEP ${vs} / ${STEPS.length-1}</div>
       <h1 class="qtitle">${esc(st.title)}</h1><p class="qdesc">${esc(st.desc)}</p>
       <span class="who">🙋 고객사(브랜드)가 진행</span>
       ${sectionsHtml(st,data)}
-      <div class="stickynav">${gate}
+      <div class="stickynav">${S.readonly?"":gate}
         <div class="row2">
           <button class="btn sub" ${vs===0?"disabled":""} data-go="${vs-1}">이전</button><span class="sp"></span>
           <span class="hint">필수 ${sstat.done} / ${sstat.tot} 완료</span>
-          <button class="btn primary" data-go="${vs+1}" ${complete?"":"disabled"}>${isLast?"완료하기":"다음 단계"}</button>
+          <button class="btn primary" data-go="${vs+1}" ${(S.readonly?isLast:!complete)?"disabled":""}>${isLast?(S.readonly?"마지막 단계":"완료하기"):"다음 단계"}</button>
         </div></div></div>
-    <div class="foot">입력하면 자동 저장돼요. 나중에 이 링크로 다시 들어와 이어서 진행할 수 있어요.</div></div>`;
+    <div class="foot">${S.readonly?"관리자 열람 전용 화면입니다. 브랜드가 제출한 내용을 그대로 보여줍니다.":"입력하면 자동 저장돼요. 나중에 이 링크로 다시 들어와 이어서 진행할 수 있어요."}</div></div>`;
 }
 function sectionsHtml(st,data){
   const groups=[];let cur=null;
@@ -1192,7 +1197,8 @@ function sheetHtml(b){
   return `<div class="sheethd">
     <div class="r1"><h3>${esc(b.name)}</h3>${all?'<span class="pill p-done">온보딩 완료</span>':`<span class="pill p-prog">진행 ${pct}%</span>`}</div>
     ${b.updatedAt?`<div class="metaline">마지막 업데이트 ${esc(fmt(b.updatedAt))}</div>`:""}
-    <div class="r2"><button class="ghost blue" data-pdf="${S.adminSel}">개발 전달용 PDF</button>
+    <div class="r2"><button class="ghost blue" data-openbrand="${esc(b.id)}">브랜드 페이지 열기</button>
+      <button class="ghost" data-pdf="${S.adminSel}">개발 전달용 PDF</button>
       ${canEdit()?`<button class="ghost" data-copybrand="${S.adminSel}">브랜드 링크 복사</button>`:""}
       <span style="flex:1"></span><span class="hint">단계를 클릭하면 제출 내용이 펼쳐져요</span></div>
     </div>${rows}`;
@@ -1338,12 +1344,17 @@ function openTermFull(fk,i){
   document.addEventListener("keydown",onKey);document.body.appendChild(bk);
 }
 function bind(){
+  if(S.readonly)document.querySelectorAll("#app input,#app textarea").forEach(el=>el.disabled=true);
+  document.querySelectorAll("[data-openbrand]").forEach(el=>el.onclick=()=>{
+    const base=location.origin+location.pathname.replace(/admin\/?$/,"");
+    window.open(base+"?view="+encodeURIComponent(el.dataset.openbrand),"_blank");});
   document.querySelectorAll("[data-termfull]").forEach(el=>el.onclick=()=>openTermFull(el.dataset.termfull,+el.dataset.i));
   document.querySelectorAll("[data-asset]").forEach(el=>el.onclick=async()=>{const t=el.textContent;el.textContent="링크 생성 중…";
     try{const r=await api(`/api/asset-url?b=${encodeURIComponent(BTOK||"")}&k=${encodeURIComponent(AKEY||"")}&name=${el.dataset.asset}`);window.open(r.url,"_blank");}
     catch(e){alert("다운로드 링크 생성에 실패했어요. 잠시 후 다시 시도해 주세요.");}
     el.textContent=t;});
   document.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>{if(el.hasAttribute("disabled"))return;S.viewStep=+el.dataset.go;render();window.scrollTo({top:0,behavior:"smooth"});});
+  if(!S.readonly){
   document.querySelectorAll("[data-toggle]").forEach(el=>el.onclick=()=>{const k=el.dataset.toggle;set(k,D()[k]===true?false:true);});
   document.querySelectorAll("[data-input]").forEach(el=>el.onchange=()=>set(el.dataset.input,el.value));
   document.querySelectorAll("[data-radio]").forEach(el=>el.onclick=()=>set(el.dataset.radio,el.dataset.val));
@@ -1357,6 +1368,7 @@ function bind(){
   document.querySelectorAll("[data-tin]").forEach(el=>{el.oninput=()=>{const k=el.dataset.tin;D()[k]=D()[k]||{};D()[k][el.dataset.item]=el.value;scheduleSave();};el.onchange=()=>render();});
   document.querySelectorAll("[data-up]").forEach(el=>el.onclick=e=>{e.stopPropagation();const inp=document.querySelector(`input[data-fin="${el.dataset.up}"][data-item="${el.dataset.item}"]`);if(inp)inp.click();});
   document.querySelectorAll("[data-fin]").forEach(el=>el.onchange=()=>uploadFile(el.dataset.fin,el.dataset.item,el.files[0]));
+  }
   document.querySelectorAll("[data-asel]").forEach(el=>el.onclick=()=>{S.adminSel=+el.dataset.asel;S.newLink=null;S.openStep=null;render();});
   document.querySelectorAll("[data-sstep]").forEach(el=>el.onclick=()=>{const i=+el.dataset.sstep;S.openStep=(S.openStep===i)?null:i;render();});
   document.querySelectorAll("[data-copy]").forEach(el=>el.onclick=()=>navigator.clipboard.writeText(el.dataset.copy).then(()=>el.textContent="복사됨 ✓"));
@@ -1440,6 +1452,13 @@ async function loadAdmin(){
   render();
 }
 (async()=>{
+  if(VIEWID){
+    if(!AKEY){S.mode="error";S.errmsg="관리자 로그인이 필요해요. 관리자 페이지에서 [브랜드 페이지 열기]로 다시 열어주세요.";render();return;}
+    render();
+    try{const r=await api("/api/brand-view?id="+encodeURIComponent(VIEWID)+"&k="+encodeURIComponent(AKEY));
+      S.brand={name:r.name,data:r.data||{}};S.mode="brand";}
+    catch(e){S.mode="error";S.errmsg="브랜드 정보를 불러올 수 없어요. 관리자 권한이 있는지 확인해 주세요.";}
+    render();return;}
   if(S.mode==="brand"){S.mode="loading";render();
     try{const r=await api("/api/brand?b="+encodeURIComponent(BTOK));S.brand={name:r.name,data:r.data||{}};S.mode="brand";}
     catch(e){S.mode="error";S.errmsg="브랜드 링크가 올바르지 않아요. 담당 매니저에게 문의해 주세요.";}

@@ -1637,7 +1637,7 @@ function sheetHtml(b){
   return `<div class="sheethd">
     <div class="r1"><h3>${esc(b.name)}</h3>${all?'<span class="pill p-done">온보딩 완료</span>':`<span class="pill p-prog">진행 ${pct}%</span>`}</div>
     ${b.updatedAt?`<div class="metaline">마지막 업데이트 ${esc(fmt(b.updatedAt))}</div>`:""}
-    <div class="r2"><button class="ghost blue" data-openbrand="${esc(b.id)}">브랜드 페이지 열기</button>
+    <div class="r2"><button class="ghost blue" data-openbrand="${esc(b.id)}" data-obtok="${(canEdit()&&b.token)?esc(b.token):""}">브랜드 페이지 열기${canEdit()?" · 수정 가능":" · 열람 전용"}</button>
       <button class="ghost" data-pdf="${S.adminSel}">개발 전달용 PDF</button>
       ${canEdit()?`<button class="ghost" data-copybrand="${S.adminSel}">브랜드 링크 복사</button>`:""}
       <span style="flex:1"></span><span class="hint">단계를 클릭하면 제출 내용이 펼쳐져요</span></div>
@@ -1787,7 +1787,9 @@ function bind(){
   if(S.readonly)document.querySelectorAll("#app input,#app textarea").forEach(el=>el.disabled=true);
   document.querySelectorAll("[data-openbrand]").forEach(el=>el.onclick=()=>{
     const base=location.origin+location.pathname.replace(/admin\/?$/,"");
-    window.open(base+"?view="+encodeURIComponent(el.dataset.openbrand),"_blank");});
+    const tok=el.dataset.obtok||"";
+    /* 최고관리자: 브랜드 토큰으로 열어 그대로 수정 가능 · 일반관리자: 토큰 없이 열람 전용 */
+    window.open(base+(tok?"?b="+encodeURIComponent(tok):"?view="+encodeURIComponent(el.dataset.openbrand)),"_blank");});
   document.querySelectorAll("[data-termfull]").forEach(el=>el.onclick=()=>openTermFull(el.dataset.termfull,+el.dataset.i));
   document.querySelectorAll("[data-asset]").forEach(el=>el.onclick=async()=>{const t=el.textContent;el.textContent="링크 생성 중…";
     try{const r=await api(`/api/asset-url?b=${encodeURIComponent(BTOK||"")}&k=${encodeURIComponent(AKEY||"")}&name=${el.dataset.asset}`);window.open(r.url,"_blank");}

@@ -556,7 +556,7 @@ const BTOK=qsp.get("b");
 const VIEWID=qsp.get("view");
 const ADMIN_PATH=/\/admin\/?$/.test(location.pathname);
 let AKEY=qsp.get("k")||((ADMIN_PATH||VIEWID)?(localStorage.getItem("smt_akey")||""):"");
-let S={mode:VIEWID?"loading":(BTOK?"brand":(AKEY?"admin":(ADMIN_PATH?"keyin":"landing"))),readonly:!!VIEWID,keyerr:null,me:null,adminTab:"master",mwSel:0,mwNa:false,users:[],authView:"login",meMsg:null,meMsgErr:false,brand:null,viewStep:undefined,openStep:null,brands:[],adminSel:0,saving:"idle",newLink:null,uploading:{}};
+let S={mode:VIEWID?"loading":(BTOK?"brand":(AKEY?"admin":(ADMIN_PATH?"keyin":"landing"))),readonly:!!VIEWID,keyerr:null,me:null,adminTab:"master",mwSel:0,mwNa:false,copiedLink:null,users:[],authView:"login",meMsg:null,meMsgErr:false,brand:null,viewStep:undefined,openStep:null,brands:[],adminSel:0,saving:"idle",newLink:null,uploading:{}};
 
 const STEPS=[
  {tag:"0단계",short:"NDA",title:"NDA 체결",desc:"상세 자료 검토를 시작하기 전, 비밀유지계약(NDA)을 먼저 체결해요. 초안(양방향)은 소프트먼트가 드려요.",
@@ -1587,10 +1587,12 @@ function sheetHtml(b){
   return `<div class="sheethd">
     <div class="r1"><h3>${esc(b.name)}</h3>${all?'<span class="pill p-done">온보딩 완료</span>':`<span class="pill p-prog">진행 ${pct}%</span>`}</div>
     ${b.updatedAt?`<div class="metaline">마지막 업데이트 ${esc(fmt(b.updatedAt))}</div>`:""}
-    <div class="r2"><button class="ghost blue" data-openbrand="${esc(b.id)}" data-obtok="${(canEdit()&&b.token)?esc(b.token):""}">브랜드 페이지 열기${canEdit()?" · 수정 가능":" · 열람 전용"}</button>
+    <div class="r2">${canEdit()?`<button class="ghost blue" data-copybrand="${S.adminSel}">🔗 브랜드사 전달용 링크 복사</button>`:""}
+      <button class="ghost" data-openbrand="${esc(b.id)}" data-obtok="${(canEdit()&&b.token)?esc(b.token):""}">브랜드 페이지 열기${canEdit()?" · 수정 가능":" · 열람 전용"}</button>
       <button class="ghost" data-pdf="${S.adminSel}">개발 전달용 PDF</button>
-      ${canEdit()?`<button class="ghost" data-copybrand="${S.adminSel}">브랜드 링크 복사</button>`:""}
       <span style="flex:1"></span><span class="hint">단계를 클릭하면 제출 내용이 펼쳐져요</span></div>
+    ${(S.copiedLink&&S.copiedLink.id===b.id)?`<div class="linkbox">✅ 링크를 복사했어요. <b>${esc(b.name)}</b> 담당자에게 이 주소를 전달하세요.<span class="u">${esc(S.copiedLink.url)}</span>
+      <span class="hint">이 링크를 가진 사람은 누구나 해당 브랜드의 온보딩 페이지를 열고 입력할 수 있어요. 담당자에게만 전달해 주세요.</span></div>`:""}
     </div>${rows}`;
 }
 function fmt(iso){try{const d=new Date(iso);return d.getFullYear()+"."+p2(d.getMonth()+1)+"."+p2(d.getDate())+" "+p2(d.getHours())+":"+p2(d.getMinutes());}catch(e){return iso.slice(0,16);}}
@@ -1761,11 +1763,12 @@ function bind(){
   document.querySelectorAll("[data-up]").forEach(el=>el.onclick=e=>{e.stopPropagation();const inp=document.querySelector(`input[data-fin="${el.dataset.up}"][data-item="${el.dataset.item}"]`);if(inp)inp.click();});
   document.querySelectorAll("[data-fin]").forEach(el=>el.onchange=()=>uploadFile(el.dataset.fin,el.dataset.item,el.files[0]));
   }
-  document.querySelectorAll("[data-asel]").forEach(el=>el.onclick=()=>{S.adminSel=+el.dataset.asel;S.newLink=null;S.openStep=null;render();});
+  document.querySelectorAll("[data-asel]").forEach(el=>el.onclick=()=>{S.adminSel=+el.dataset.asel;S.newLink=null;S.copiedLink=null;S.openStep=null;render();});
   document.querySelectorAll("[data-sstep]").forEach(el=>el.onclick=()=>{const i=+el.dataset.sstep;S.openStep=(S.openStep===i)?null:i;render();});
   document.querySelectorAll("[data-copy]").forEach(el=>el.onclick=()=>navigator.clipboard.writeText(el.dataset.copy).then(()=>el.textContent="복사됨 ✓"));
   document.querySelectorAll("[data-copybrand]").forEach(el=>el.onclick=()=>{const b=S.brands[+el.dataset.copybrand];const url=location.origin+location.pathname.replace(/admin\/?$/,"")+"?b="+b.token;
-    navigator.clipboard.writeText(url).then(()=>{el.textContent="복사됨 ✓";setTimeout(()=>el.textContent="브랜드 링크 복사",1500);});});
+    navigator.clipboard.writeText(url).then(()=>{S.copiedLink={id:b.id,url};render();})
+      .catch(()=>{S.copiedLink={id:b.id,url};render();});});
   document.querySelectorAll("[data-pdf]").forEach(el=>el.onclick=()=>openPdf(S.brands[+el.dataset.pdf]));
   document.querySelectorAll("[data-redo]").forEach(el=>el.onclick=async()=>{
     const [fk,it]=el.dataset.redo.split("|");
@@ -1795,7 +1798,7 @@ function bind(){
     catch(err){alert("다운로드 링크 생성에 실패했어요.");}});
   const rf=document.getElementById("refresh");if(rf)rf.onclick=loadAdmin;
   document.querySelectorAll("[data-atab]").forEach(el=>el.onclick=async()=>{S.adminTab=el.dataset.atab;S.meMsg=null;if(S.adminTab==="users")await loadUsers();render();});
-  document.querySelectorAll("[data-wsel]").forEach(el=>el.onclick=()=>{S.adminSel=+el.dataset.wsel;S.adminTab="brands";S.newLink=null;S.openStep=null;render();window.scrollTo({top:0,behavior:"smooth"});});
+  document.querySelectorAll("[data-wsel]").forEach(el=>el.onclick=()=>{S.adminSel=+el.dataset.wsel;S.adminTab="brands";S.newLink=null;S.copiedLink=null;S.openStep=null;render();window.scrollTo({top:0,behavior:"smooth"});});
   document.querySelectorAll("[data-mwsel]").forEach(el=>el.onclick=()=>{S.mwSel=+el.dataset.mwsel;render();});
   const mo=document.getElementById("mw_open");
   if(mo)mo.onchange=async()=>{const b=S.brands[S.mwSel];opsSet(b,"open",null,mo.value);render();await saveOps(b);};

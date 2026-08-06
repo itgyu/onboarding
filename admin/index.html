@@ -852,7 +852,8 @@ function firstIncomplete(data){for(let i=0;i<STEPS.length;i++)if(!stepDone(i,dat
 const progressOf=data=>Math.round(STEPS.filter((_,i)=>stepDone(i,data)).length/STEPS.length*100);
 
 /* ================= api ================= */
-async function api(path,opt){const r=await fetch(path,opt);if(!r.ok)throw new Error("api "+r.status);return r.json();}
+const API_BASE="https://3l4r2nrpaf.execute-api.ap-northeast-2.amazonaws.com";
+async function api(path,opt){const r=await fetch(API_BASE+path,opt);if(!r.ok)throw new Error("api "+r.status);return r.json();}
 let saveTimer=null;
 function scheduleSave(){
   if(S.readonly)return;

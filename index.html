@@ -170,9 +170,20 @@ button:focus:not(:focus-visible){outline:none}
 .who{display:inline-flex;gap:6px;margin-top:15px;font-size:var(--fs-xs);font-weight:800;
   padding:6px 12px;border-radius:var(--r-full);background:var(--blue-weak);color:var(--blue-ink)}
 
-/* field */
-.field{margin-top:26px}
+/* field — 항목 하나하나를 카드로 끊어서 위아래 항목과 섞이지 않게 한다 */
+.field{margin-top:26px;position:relative;background:var(--card);
+  border:1px solid var(--line-2);border-radius:var(--r-md);padding:19px 17px 20px}
 .field:first-of-type{margin-top:22px}
+.field .fnum{position:absolute;top:-11px;left:15px;height:22px;padding:0 9px;
+  border-radius:var(--r-full);background:var(--ink);color:#fff;
+  font-size:var(--fs-micro);font-weight:800;display:inline-flex;align-items:center;
+  letter-spacing:.02em;box-shadow:0 0 0 4px var(--card)}
+/* 조건부 항목 — 바로 위 항목의 답에 딸린 하위 입력임을 들여쓰기·좌측선으로 보여준다 */
+.field.sub{margin-top:10px;margin-left:20px;border-left:3px solid var(--blue);
+  border-top-left-radius:var(--r-xs);border-bottom-left-radius:var(--r-xs)}
+.field.sub .subtag{color:var(--blue-ink);font-size:var(--fs-xs);font-weight:800;
+  margin-bottom:9px;display:flex;gap:5px;align-items:center}
+@media (max-width:520px){.field{padding:17px 14px 18px}.field.sub{margin-left:10px}}
 .flabel{font-weight:800;font-size:var(--fs-h3);margin-bottom:12px;display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}
 .flabel .req{color:var(--blue-ink);font-size:var(--fs-micro);font-weight:800;background:var(--blue-weak);
   padding:2px 7px;border-radius:var(--r-xs)}
@@ -641,7 +652,7 @@ const STEPS=[
      {id:"searchid",label:"③ 검색용 아이디"},
      {id:"pub",label:"④ 채널공개 설정 — ON 필수",ph:"ON / OFF"},
      {id:"csinfo",label:"⑤ 고객센터 정보 입력 여부",ph:"입력 완료 / 미입력"} ]},
-   {k:"alimtalk_cap",type:"checklist",req:true,showIf:d=>d.alimtalk==="등록 완료",label:"⑥ 비즈니스 채널 전환 화면 캡처 (필수)",alabel:"채널 전환 캡처",items:[
+   {k:"alimtalk_cap",type:"checklist",req:true,showIf:d=>d.alimtalk==="등록 완료",label:"비즈니스 채널 전환 화면 캡처",alabel:"채널 전환 캡처",items:[
      {id:"cap",label:"비즈니스 채널 전환 완료 화면 캡처 첨부",file:true} ]},
    {k:"couponmall",type:"radio",req:true,options:["사용","미사용"],label:"연동 ② 외부 쿠폰몰 연동",alabel:"외부 쿠폰몰"},
    {k:"couponmall_info",type:"text",req:true,showIf:d=>d.couponmall==="사용",label:"외부 쿠폰몰 업체·계정 정보",alabel:"쿠폰몰 정보",ph:"업체명 / 계정 정보"},
@@ -779,7 +790,7 @@ const STEPS=[
   fields:[
    {sec:{t:"브랜드 자산",d:"앱 이름과 브랜드 컬러·로고를 전달해 주세요."},k:"appname",type:"text",req:true,alabel:"앱 이름·도메인",label:"자사앱 이름 (App Store·Play Store 등재명)",ph:"한글·영문만 — 띄어쓰기·특수기호 사용 불가",
      guide:{what:"스토어에 등재될 이름이에요. ⚠️ 띄어쓰기·특수기호(-, :, 괄호)는 사용할 수 없어요 — 한글·영문으로만 지어주세요."}},
-   {k:"colors",type:"inputs",req:false,alabel:"브랜드 컬러",label:"브랜드 컬러 (컬러 코드 HEX 또는 팬톤 번호)",
+   {k:"colors",type:"inputs",req:false,alabel:"브랜드 컬러",label:"브랜드 컬러 (컬러 코드 HEX 또는 팬톤 번호) (선택)",
      guide:{what:"앱 버튼·포인트 색으로 쓰여요. HEX나 팬톤 번호를 모르시면 비워두셔도 돼요."},
      items:[
       {id:"main",label:"메인 컬러",ph:"#3182F6 또는 PANTONE 2175C",opt:true},
@@ -789,7 +800,7 @@ const STEPS=[
      items:[
       {id:"logofile",label:"로고 원본 파일 — AI 또는 SVG + PNG (최대 1MB · 512×512px 이상)",file:true},
       {id:"ci",label:"CI·브랜드 가이드 문서 (있으시면 첨부)",na:true,file:true} ]},
-   {k:"tone",type:"textarea",req:false,alabel:"톤앤매너 참고",label:"톤앤매너 참고 자료 — 참고 앱·웹사이트 3개",
+   {k:"tone",type:"textarea",req:false,alabel:"톤앤매너 참고",label:"톤앤매너 참고 자료 — 참고 앱·웹사이트 3개 (선택)",
      ph:"예) ○○앱 — 깔끔한 화이트톤이 좋아요 / ○○웹 — 포인트 컬러 활용 참고 / 전체적으로 따뜻한 느낌을 원해요"},
    {sec:{t:"앱 이미지 8종",d:"앱 화면에 필요한 이미지 8종이에요. 보유하신 원본을 올려주세요."},k:"images",type:"checklist",req:true,alabel:"필수 이미지 8종",label:"필수 이미지 자산 8종 — 항목별 파일 첨부 (없는 항목은 '해당없음')",
      guide:{what:"보유하신 원본 중 가장 큰 해상도로 올려주세요.",ours:"'해당없음' 항목은 기본 템플릿으로 제작해 시안에서 함께 확인하실 수 있어요."},
@@ -841,8 +852,7 @@ function firstIncomplete(data){for(let i=0;i<STEPS.length;i++)if(!stepDone(i,dat
 const progressOf=data=>Math.round(STEPS.filter((_,i)=>stepDone(i,data)).length/STEPS.length*100);
 
 /* ================= api ================= */
-const API_BASE="https://3l4r2nrpaf.execute-api.ap-northeast-2.amazonaws.com";
-async function api(path,opt){const r=await fetch(API_BASE+path,opt);if(!r.ok)throw new Error("api "+r.status);return r.json();}
+async function api(path,opt){const r=await fetch(path,opt);if(!r.ok)throw new Error("api "+r.status);return r.json();}
 let saveTimer=null;
 function scheduleSave(){
   if(S.readonly)return;
@@ -982,7 +992,18 @@ function sectionsHtml(st,data){
     cur.fields.push(f);
   });
   return groups.map((g,gi)=>{
-    const body=g.fields.map(f=>fieldHtml(f,data)).join("");
+    /* 섹션 안에서 답해야 하는 항목에만 1,2,3… 번호를 붙인다.
+       읽기만 하는 항목(안내·참고자료·다운로드)과 조건부 하위 항목은 번호를 받지 않는다. */
+    let no=0;
+    const body=g.fields.map(f=>{
+      let h=fieldHtml(f,data);
+      if(!h.trim())return "";
+      const ans=f.type!=="info"&&f.type!=="docs"&&f.type!=="downloads";
+      let cls="",head="";
+      if(f.showIf){cls=" sub";head=`<div class="subtag"><span>↳</span><span>위 답변에 따라 추가로 필요한 항목이에요</span></div>`;}
+      else if(ans){no++;head=`<span class="fnum">${no}</span>`;}
+      return h.replace('<div class="field">',`<div class="field${cls}">${head}`);
+    }).join("");
     if(!body.trim())return "";
     let hd="";
     if(g.sec){
@@ -990,7 +1011,7 @@ function sectionsHtml(st,data){
       const dn=req.filter(f=>fieldDone(f,data)).length;
       const pg=req.length?(dn===req.length
         ?`<span class="gsecpg ok">완료 ✓</span>`
-        :`<span class="gsecpg run">${dn} / ${req.length}</span>`):"";
+        :`<span class="gsecpg run">필수 ${dn}/${req.length}</span>`):"";
       hd=`<div class="gsechd"><span class="gn">${gi+1}</span><h3>${esc(g.sec.t)}</h3>${pg}</div>
         ${g.sec.d?`<div class="gsecd">${esc(g.sec.d)}</div>`:""}`;
     }
